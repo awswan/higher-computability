@@ -1,3 +1,5 @@
+open import Cubical.Data.Nat
+
 open import Counted.Base
 
 open import Axioms.ComputableChoice

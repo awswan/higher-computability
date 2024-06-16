@@ -9,7 +9,3 @@ module StrictlyCounted.Base where
 record StrictlyCounted (X : Type ℓ) : Type ℓ where
   field
     equiv : ℕ ≃ X
-
-instance
-  sCountedℕ : StrictlyCounted ℕ
-  StrictlyCounted.equiv sCountedℕ = idEquiv ℕ
