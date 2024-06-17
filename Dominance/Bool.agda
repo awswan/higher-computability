@@ -33,6 +33,8 @@ Dominance.isEmbeddingP BoolDom b b' =
       (isOfHLevel≡ 1 (isProp-Bool→Type b) (isProp-Bool→Type b'))
       (cong Bool→Type)
       λ p → Bool→TypeInj b b' (pathToEquiv p))
+Dominance.unit BoolDom = true
+Dominance.isInhUnit BoolDom = tt
 Dominance.ΣLift BoolDom false b' = false
 Dominance.ΣLift BoolDom true b' = b' tt
 Dominance.ΣLiftIsΣ BoolDom {false} {b'} = ua (uninhabEquiv (λ x → x) fst)

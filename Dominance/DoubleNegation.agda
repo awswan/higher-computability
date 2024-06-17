@@ -20,20 +20,25 @@ open import Misc
 
 module Dominance.DoubleNegation where
 
-¬¬PreDom : (ℓ : Level) → PreDominance {ℓ = ℓ-suc ℓ} {ℓ' = ℓ}
-PreDominance.Idx (¬¬PreDom ℓ) = hProp¬¬ ℓ
-PreDominance.P (¬¬PreDom ℓ) = hProp¬¬.P
-PreDominance.isPropP (¬¬PreDom ℓ) = hProp¬¬.isPropP
+opaque
+  ¬¬PreDom : (ℓ : Level) → PreDominance {ℓ = ℓ-suc ℓ} {ℓ' = ℓ}
+  PreDominance.Idx (¬¬PreDom ℓ) = hProp¬¬ ℓ
+  PreDominance.P (¬¬PreDom ℓ) = hProp¬¬.P
+  PreDominance.isPropP (¬¬PreDom ℓ) = hProp¬¬.isPropP
 
-¬¬Dom : (ℓ ℓ' : Level) → Dominance {ℓ = ℓ-suc ℓ} {ℓ' = ℓ}
-Dominance.pred (¬¬Dom ℓ ℓ') = ¬¬PreDom ℓ
-Dominance.isEmbeddingP (¬¬Dom ℓ ℓ') = hProp¬¬isEmbedP
-hProp¬¬.P (Dominance.ΣLift (¬¬Dom ℓ ℓ') p q) = Σ (hProp¬¬.P p) (hProp¬¬.P ∘ q)
-hProp¬¬.isPropP (Dominance.ΣLift (¬¬Dom ℓ ℓ') p q) =
-  isPropΣ (hProp¬¬.isPropP p) λ x → hProp¬¬.isPropP (q x)
-hProp¬¬.StableP (Dominance.ΣLift (¬¬Dom ℓ ℓ') p q) =
-  StableΣ (hProp¬¬.StableP p) (hProp¬¬.isPropP p) (hProp¬¬.StableP ∘ q)
-Dominance.ΣLiftIsΣ (¬¬Dom ℓ ℓ') = refl
+  ¬¬Dom : (ℓ ℓ' : Level) → Dominance {ℓ = ℓ-suc ℓ} {ℓ' = ℓ}
+  Dominance.pred (¬¬Dom ℓ ℓ') = ¬¬PreDom ℓ
+  Dominance.isEmbeddingP (¬¬Dom ℓ ℓ') = hProp¬¬isEmbedP
+  hProp¬¬.P (Dominance.unit (¬¬Dom ℓ ℓ')) = Unit*
+  hProp¬¬.isPropP (Dominance.unit (¬¬Dom ℓ ℓ')) = isPropUnit*
+  hProp¬¬.StableP (Dominance.unit (¬¬Dom ℓ ℓ')) _ = tt*
+  Dominance.isInhUnit (¬¬Dom ℓ ℓ') = tt*
+  hProp¬¬.P (Dominance.ΣLift (¬¬Dom ℓ ℓ') p q) = Σ (hProp¬¬.P p) (hProp¬¬.P ∘ q)
+  hProp¬¬.isPropP (Dominance.ΣLift (¬¬Dom ℓ ℓ') p q) =
+    isPropΣ (hProp¬¬.isPropP p) λ x → hProp¬¬.isPropP (q x)
+  hProp¬¬.StableP (Dominance.ΣLift (¬¬Dom ℓ ℓ') p q) =
+    StableΣ (hProp¬¬.StableP p) (hProp¬¬.isPropP p) (hProp¬¬.StableP ∘ q)
+  Dominance.ΣLiftIsΣ (¬¬Dom ℓ ℓ') = refl
 
 ∂¬¬ : (ℓ' : Level) → Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ'))
-∂¬¬ ℓ' = ∂Pred (¬¬PreDom ℓ')
+∂¬¬ {ℓ} ℓ' = ∂Pred (Dominance.pred (¬¬Dom ℓ' ℓ))

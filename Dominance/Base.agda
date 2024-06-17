@@ -9,7 +9,7 @@ open import Notation.Variables
 
 module Dominance.Base where
 
-record PreDominance : Type (ℓ-suc (ℓ-max ℓ ℓ')) where
+record PreDominance : Type (ℓ-max (ℓ-suc ℓ) (ℓ-suc ℓ')) where
   field
     Idx : Type ℓ
     P : Idx → Type ℓ'
@@ -37,8 +37,19 @@ record Dominance : Type (ℓ-suc (ℓ-max ℓ ℓ')) where
   open PreDominance pred
   field
     isEmbeddingP : isEmbedding P
+    unit : Idx
+    isInhUnit : P unit
     ΣLift : (x : Idx) → (P x → Idx) → Idx
     ΣLiftIsΣ : {x : Idx} {Q : P x → Idx} → P (ΣLift x Q) ≡ Σ (P x) (P ∘ Q)
+
+ι : (dom : Dominance {ℓ = ℓ} {ℓ' = ℓ'}) {X : Type ℓ''} →
+  X → ∂Pred (Dominance.pred dom) X
+∂Pred.d (ι dom x) = Dominance.unit dom
+∂Pred.ξ (ι dom x) _ = x
+
+ιdefd : (dom : Dominance {ℓ = ℓ} {ℓ' = ℓ'}) {X : Type ℓ''} →
+  (x : X) → ι dom x ↓
+ιdefd dom x = Dominance.isInhUnit dom
 
 _⊑_ : {ℓA ℓS ℓS' : Level} {A : Type ℓA} {S : Type ℓS}
   ⦃ ctp : CoercesToPartial A S ℓ ⦄ → (α : S) →
