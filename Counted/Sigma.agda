@@ -9,7 +9,6 @@ open import Cubical.Data.Sigma
 open import Cubical.HITs.PropositionalTruncation
 
 open import Counted.Base
-open import Counted.FromCovered
 
 open import Encodings.Product
 

@@ -7,9 +7,9 @@ open import Notation.Variables
 
 module Counted.FromCovered where
 
-countedFromCovered : {B : Type ℓ'} {A : Type ℓ} ⦃ ctdA : Counted A ⦄ →
+countedFromCovered : {B : Type ℓ'} (A : Type ℓ) ⦃ ctdA : Counted A ⦄ →
   A ↠ B → Counted B
-countedFromCovered {B = B} ⦃ ctdA ⦄ s =
+countedFromCovered {B = B} A ⦃ ctdA ⦄ s =
   record { enum = fst e ; isSurjEnum = snd e }
   where
     e : ℕ ↠ B

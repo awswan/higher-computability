@@ -1,6 +1,10 @@
 open import Cubical.Data.Nat
+open import Cubical.Data.Sigma
 
 open import Counted.Base
+open import Counted.FromCovered
+open import Counted.Nat
+open import Counted.Sigma
 
 open import Axioms.ComputableChoice
 
@@ -11,4 +15,5 @@ module Counted.NatInf where
 
 instance
   Countedℕ∞ : Counted ℕ∞
-  Counted.enum Countedℕ∞ = {!!}
+  Countedℕ∞ = countedFromCovered (ℕ × ℕ) {!!}
+    where
