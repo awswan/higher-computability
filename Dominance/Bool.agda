@@ -13,29 +13,21 @@ open import Cubical.Data.Unit
 
 open import Dominance.Base
 
+open import Misc
 open import Notation.Variables
 
 module Dominance.Bool where
 
-BoolPred : PreDominance
-PreDominance.Idx BoolPred = Bool
-PreDominance.P BoolPred = Bool→Type
-PreDominance.isPropP BoolPred = isProp-Bool→Type
+open PreDominance
 
-∂dec : Type ℓ → Type ℓ
-∂dec = ∂Pred BoolPred
+opaque
+  BoolPred : PreDominance ℓ ℓ
+  inDom BoolPred P = Σ[ b ∈ Bool ] Bool→Type b ≃ P
+  onlyProps BoolPred P (b , e) = isOfHLevelRespectEquiv 1 e isPropBool→Type
+  containsUnit BoolPred = true , Unit≃Unit*
+  Σclosed BoolPred (b , e) Qdata =
+    ΣBool b (λ x → fst (Qdata (equivFun e x))) ,
+    ΣBool≃Σ ∙ₑ Σ-cong-equiv e λ x → snd (Qdata (equivFun e x))
 
-BoolDom : Dominance
-Dominance.pred BoolDom = BoolPred
-Dominance.isEmbeddingP BoolDom b b' =
-  snd (propBiimpl→Equiv
-      (isSetBool _ _)
-      (isOfHLevel≡ 1 (isProp-Bool→Type b) (isProp-Bool→Type b'))
-      (cong Bool→Type)
-      λ p → Bool→TypeInj b b' (pathToEquiv p))
-Dominance.unit BoolDom = true
-Dominance.isInhUnit BoolDom = tt
-Dominance.ΣLift BoolDom false b' = false
-Dominance.ΣLift BoolDom true b' = b' tt
-Dominance.ΣLiftIsΣ BoolDom {false} {b'} = ua (uninhabEquiv (λ x → x) fst)
-Dominance.ΣLiftIsΣ BoolDom {true} {b'} = sym (ua (ΣUnit (Bool→Type ∘ b')))
+∂Bool : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ'))
+∂Bool {ℓ' = ℓ'} = ∂ (BoolPred {ℓ = ℓ'})
