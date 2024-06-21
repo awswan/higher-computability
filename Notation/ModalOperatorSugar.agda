@@ -1,4 +1,4 @@
-open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 module Notation.ModalOperatorSugar where
 
