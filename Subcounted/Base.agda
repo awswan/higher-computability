@@ -1,10 +1,9 @@
-open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 open import Cubical.Data.Nat
 
 open import Cubical.HITs.PropositionalTruncation
 
-open import Partiality.Base
 open import Dominance.Base
 open import Dominance.DoubleNegation
 

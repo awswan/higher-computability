@@ -13,7 +13,7 @@ open import Cubical.Relation.Nullary renaming (Stable to ¬¬Stable)
 
 open import Dominance.Base
 open import Dominance.NatInf
-open import Partiality.Base
+-- open import Partiality.Base
 open import Types.PropNegNeg
 open import Dominance.DoubleNegation
 
