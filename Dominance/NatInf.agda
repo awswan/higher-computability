@@ -1,8 +1,12 @@
 open import Cubical.Core.Everything
+open import Cubical.Foundations.HLevels
+open import Cubical.Foundations.Equiv
 open import Dominance.Base
 
 open import Cubical.Data.Nat
 open import Cubical.Data.Maybe
+open import Cubical.Data.Sigma
+open import Cubical.Data.Unit
 open import Cubical.Data.Fin
 
 open import Types.NatInf
@@ -10,15 +14,27 @@ open import Types.NatInf
 open import Notation.CoercesToType
 open import Notation.Variables
 
+open import Types.NatInf
+
 module Dominance.NatInf where
 
-ℕPred : PreDominance
-PreDominance.Idx ℕPred = ℕ∞
-PreDominance.P ℕPred α = ⟨ α ⟩
-PreDominance.isPropP ℕPred α = ℕ∞.unique α
+open PreDominance
 
-∂ℕ∞ : Type ℓ → Type ℓ
-∂ℕ∞ = ∂Pred ℕPred
+ℕ∞Pred : PreDominance ℓ ℓ
+inDom ℕ∞Pred P = Σ[ α ∈ ℕ∞ ] P ≃ ⟨ α ⟩
+onlyProps ℕ∞Pred P (α , e) =
+  isOfHLevelRespectEquiv 1 (invEquiv e) (ℕ∞.unique α)
+containsUnit ℕ∞Pred = ℕ→ℕ∞ 0 , invEquiv (isContr→≃Unit*
+  (inhProp→isContr (ℕ→ℕ∞Ptd 0) (ℕ∞.unique (ℕ→ℕ∞ 0))))
+Σclosed ℕ∞Pred {P = P} {Q = Q} (α , e) d =
+  ℕ∞Σ α (λ x → fst (d (invEq e x))) ,
+  (Σ P Q
+    ≃⟨ Σ-cong-equiv-snd (λ p → snd (d p)) ⟩
+  Σ[ p ∈ P ] ⟨ fst (d p) ⟩
+    ≃⟨ invEquiv (Σ-cong-equiv-fst (invEquiv e)) ⟩
+  Σ[ x ∈ ⟨ α ⟩ ] ⟨ fst (d (invEq e x)) ⟩
+    ≃⟨ invEquiv (ℕ∞Σ≃ α (λ x → fst (d (invEq e x)))) ⟩
+  ⟨ ℕ∞Σ α (λ x → fst (d (invEq e x))) ⟩ ■)
 
--- withinSteps : {X : Type ℓ} → ∂ℕ∞ X → ℕ → Maybe X
--- withinSteps ξ k = {!!}
+∂ℕ∞ : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ))
+∂ℕ∞ = ∂ ℕ∞Pred
