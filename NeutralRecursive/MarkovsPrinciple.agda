@@ -8,15 +8,14 @@ open import CubicalExtras.Data.Nat.Properties
 open import Cubical.Data.Empty renaming (rec to ⊥rec) hiding (elim)
 open import Cubical.Data.Sigma
 open import Cubical.Relation.Nullary
+open import CubicalExtras.Relation.Nullary.Properties
 
 open import Types.NablaNat
 open import Types.DoubleNegationSheaves
 
-open import Misc
-
 open import Axioms.MarkovInduction
 
-module MarkovsPrinciple {ℓ : Level} where
+module NeutralRecursive.MarkovsPrinciple {ℓ : Level} where
 
 markovsPrinciple₀ : (ν : ∇ ℓ ℕ) → ((n : ℕ) → Dec (ν ≡ ∣ n ∣)) →
   Σ[ n ∈ ℕ ] ν ≡ ∣ n ∣

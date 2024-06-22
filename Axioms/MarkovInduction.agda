@@ -3,8 +3,6 @@ open import Cubical.Induction.WellFounded
 
 open import Types.NablaNat
 
-open import Misc
-
 open import Notation.ModalOperatorSugar
 
 open import Types.DoubleNegationSheaves

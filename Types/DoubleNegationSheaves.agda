@@ -5,8 +5,7 @@ open import Cubical.Foundations.Function
 open import Cubical.Foundations.HLevels
 open import Cubical.HITs.PropositionalTruncation
 open import Cubical.Relation.Nullary
-
-open import Misc
+open import CubicalExtras.Relation.Nullary.Properties
 
 open import Cubical.Data.Empty
 

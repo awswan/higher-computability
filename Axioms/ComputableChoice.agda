@@ -9,7 +9,9 @@ open import Cubical.Data.Sigma
 
 open import Cubical.HITs.PropositionalTruncation
 
-open import Cubical.Relation.Nullary renaming (Stable to ¬¬Stable)
+open import Cubical.Relation.Nullary
+open import CubicalExtras.Relation.Nullary.Properties
+
 
 open import Dominance.Base
 open import Dominance.NatInf
@@ -20,7 +22,7 @@ open import Dominance.DoubleNegation
 open import Notation.Variables
 open import Notation.CoercesToType
 
-open import Misc
+--open import Misc
 
 module Axioms.ComputableChoice where
 
@@ -34,11 +36,11 @@ postulate
   
 ComputableChoice' :
   (D : ℕ → Type ℓ) (DProp : (n : ℕ) → isProp (D n))
-  (DStab : (n : ℕ) → ¬¬Stable (D n))
+  (DStab : (n : ℕ) → Stable (D n))
   (P : (n : ℕ) → (d : D n) → ℕ → Type ℓ')
   (PProp : (n : ℕ) → (d : D n) → (m : ℕ) → isProp (P n d m))
   (PStab : (n : ℕ) → (d : D n) → (m : ℕ) →
-    ¬¬Stable (P n d m))
+    Stable (P n d m))
   (Pinh : (n : ℕ) → (d : D n) → ∥ Σ[ m ∈ ℕ ] P n d m ∥₁) →
   ∥ Σ[ e ∈ ℕ ] ((n : ℕ) → (d : D n) →
                    φ e n ↓= m & P n d m) ∥₁

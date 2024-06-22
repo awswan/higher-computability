@@ -4,6 +4,7 @@ open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Function
 
 open import Cubical.Relation.Nullary
+open import CubicalExtras.Relation.Nullary.Properties
 
 open import Cubical.Data.Sigma
 open import Cubical.Data.Empty
@@ -17,7 +18,7 @@ open import Notation.Variables
 open import Notation.ModalOperatorSugar
 open import Notation.ModalOpInstances.DoubleNegation
 
-open import Misc
+-- open import Misc
 
 module Dominance.DoubleNegation where
 

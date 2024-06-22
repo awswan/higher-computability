@@ -16,8 +16,6 @@ open import Cubical.Relation.Nullary.Base
 
 open import Encodings.Product
 
-open import Misc
-
 open import Notation.CoercesToType
 
 module Types.NatInf where
