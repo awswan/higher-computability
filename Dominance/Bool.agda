@@ -7,6 +7,7 @@ open import Cubical.Foundations.Univalence
 open import Cubical.Functions.Embedding
 
 open import Cubical.Data.Bool
+open import CubicalExtras.Data.Bool.Properties
 open import Cubical.Data.Empty
 open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
