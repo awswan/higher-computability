@@ -3,7 +3,7 @@ open import Cubical.Relation.Nullary
 
 open import Notation.Variables
 
-module Misc where
+module CubicalExtras.Relation.Nullary.Properties where
 
 StableΣ : {A : Type ℓ} {P : A → Type ℓ'} →
   Stable A → isProp A → ((a : A) → Stable (P a)) → Stable (Σ A P)
@@ -17,4 +17,3 @@ StableΣ {P = P} As Aprop Ps e =
 
 ¬¬in : {A : Type ℓ} → A → ¬ ¬ A
 ¬¬in z = λ w → w z
-
