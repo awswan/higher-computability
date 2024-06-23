@@ -19,9 +19,8 @@ parallelSearch : (P Q : ℕ → Type ℓ) (decP : (n : ℕ) → M (Dec (P n)))
   (decQ : (n : ℕ) → M (Dec (Q n))) →
   NonEmpty (Σ ℕ P ⊎ Σ ℕ Q) → M (Σ ℕ P ⊎ Σ ℕ Q)
 parallelSearch {ℓ} P Q decP decQ ¬¬exists = do
-  (n , inl(p)) ← search M PQ decPQ ¬¬existsPQ
-    where (n , inr(q)) → return (inr (n , q))
-  return (inl (n , p))
+  (n , p⊎q) ← search M PQ decPQ ¬¬existsPQ
+  return (rec (λ p → inl (n , p)) (λ q → inr (n , q)) p⊎q)
   where
     PQ : ℕ → Type ℓ
     PQ n = P n ⊎ Q n

@@ -10,3 +10,4 @@ record ModalOperator (ℓbase : Level) (M : {ℓ' : Level} → Type ℓ' →
     return : {ℓb : Level} {B : Type ℓb} → B → M B
 
 open ModalOperator ⦃...⦄ public
+
