@@ -9,13 +9,14 @@ open import Subcounted.Base
 open import Dominance.Base
 open import Dominance.DoubleNegation
 
+open import Notation.ModalOperatorSugar
+
 open import Notation.Variables
 
 module Subcounted.Properties where
 
 counted→subCounted : (X : Type ℓ) ⦃ ctdX : Counted X ⦄ → Subcounted ℓ' X
 Subcounted.subEnum (counted→subCounted {ℓ = ℓ} {ℓ' = ℓ'} X ⦃ ctdX ⦄) n =
-  ι (¬¬Dom ℓ' ℓ) (Counted.enum ctdX n)
+  return (enum n)
 Subcounted.allSubctd (counted→subCounted {ℓ' = ℓ'} X ⦃ ctdX ⦄) x =
-  map (λ (n , p) → n , ιdefd (¬¬Dom ℓ' _) (Counted.enum ctdX n) , p)
-      (Counted.isSurjEnum ctdX x)
+  map (λ (n , p) → n , (tt* , p)) (isSurjEnum x)

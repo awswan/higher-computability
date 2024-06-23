@@ -9,7 +9,6 @@ open import Subcounted.Properties
 
 open import Counted.Nat
 
-open import Partiality.Base
 open import Dominance.Base
 open import Dominance.DoubleNegation
 

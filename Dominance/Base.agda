@@ -52,11 +52,15 @@ module _ {ℓa : Level} {D : PreDominance ℓ ℓ'} {A : Type ℓa} where
     isOfHLevelΣ _ (isProp→isOfHLevelSuc n (PreDominance.onlyProps D (α ↓) (domainInD α)))
                 λ d → l (value α d)
 
+open ModalOperator
+
 instance
   ∂Bind : {Pred : PreDominance ℓ ℓ'} →
-    ModalOperator (ℓ-max (ℓ-suc ℓ) ℓ') ℓ ℓ'' (∂ Pred)
-  _↓ (ModalOperator.bind ∂Bind α f) = α ↓= z & (f z ↓)
-  domainInD (ModalOperator.bind (∂Bind {Pred = Pred}) α f) =
-    Σclosed Pred (domainInD α) λ p → domainInD (f (value α p))
-  value (ModalOperator.bind (∂Bind {Pred = Pred}) α f) (α↓ , f↓) =
-    value (f (value α α↓)) f↓
+    ModalOperator (ℓ-max (ℓ-suc ℓ) ℓ') (∂ Pred)
+  _↓ (_>>=_ ∂Bind α f) = α ↓= z & (f z ↓)
+  domainInD (_>>=_ (∂Bind {Pred = Pred}) α f) =
+    Σclosed Pred (domainInD α) λ d → domainInD (f (value α d))
+  value (_>>=_ ∂Bind α f) (α↓ , fα↓) = value (f (value α α↓)) fα↓
+  _↓ (return ∂Bind a) = Unit*
+  domainInD (return (∂Bind {Pred = Pred}) a) = containsUnit Pred
+  value (return (∂Bind) b) _ = b

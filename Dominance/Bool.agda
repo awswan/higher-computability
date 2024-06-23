@@ -14,7 +14,6 @@ open import Cubical.Data.Unit
 
 open import Dominance.Base
 
-open import Misc
 open import Notation.Variables
 
 module Dominance.Bool where

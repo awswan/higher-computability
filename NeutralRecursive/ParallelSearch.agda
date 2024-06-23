@@ -4,7 +4,7 @@ open import CubicalExtras.Relation.Nullary.Properties
 open import Cubical.Data.Nat.Base
 open import Cubical.Data.Sum.Base
 open import Cubical.Data.Sigma.Properties
-open import NeutralRecursive.RelativisedMP
+open import NeutralRecursive.MarkovsPrinciple
 
 open import Notation.ModalOperatorSugar
 open import Notation.Variables
