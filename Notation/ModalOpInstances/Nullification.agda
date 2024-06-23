@@ -10,7 +10,7 @@ module Notation.ModalOpInstances.Nullification where
 open ModalOperator
 
 instance
-  bindNull : {ℓa ℓs : Level} {A : Type ℓa} {S : A → Type ℓs} →
-    ModalOperator (ℓ-max ℓa ℓs) ℓ ℓ' (Null S)
-  _>>=_ bindNull α f = rec (isNull-Null _) f α
-  return bindNull = ∣_∣
+  modalOpNull : {ℓa ℓs : Level} {A : Type ℓa} {S : A → Type ℓs} →
+    ModalOperator (ℓ-max ℓa ℓs) (Null S)
+  _>>=_ modalOpNull α f = rec (isNull-Null _) f α
+  return modalOpNull = ∣_∣

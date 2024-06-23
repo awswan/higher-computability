@@ -7,6 +7,9 @@ open import Notation.Variables
 
 module Notation.ModalOpInstances.PropositionalTruncation where
 
+open ModalOperator
+
 instance
-  modalOpPropTrunc : ModalOperator ℓ-zero ℓ ℓ' ∥_∥₁
-  ModalOperator.bind modalOpPropTrunc α f = rec isPropPropTrunc f α
+  modalOpPropTrunc : ModalOperator ℓ-zero ∥_∥₁
+  _>>=_ modalOpPropTrunc α f = rec isPropPropTrunc f α
+  return modalOpPropTrunc = ∣_∣₁

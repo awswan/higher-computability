@@ -8,6 +8,6 @@ module Notation.ModalOpInstances.DoubleNegation where
 open ModalOperator
 
 instance
-  ¬¬modal : ModalOperator ℓ-zero (λ {ℓ} A → ¬ ¬ A)
+  ¬¬modal : ModalOperator ℓ-zero (λ A → ¬ ¬ A)
   _>>=_ ¬¬modal ¬¬A f ¬B = ¬¬A (λ a → f a ¬B)
   return ¬¬modal a ¬a = ¬a a
