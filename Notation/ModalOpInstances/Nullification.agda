@@ -12,4 +12,5 @@ open ModalOperator
 instance
   bindNull : {ℓa ℓs : Level} {A : Type ℓa} {S : A → Type ℓs} →
     ModalOperator (ℓ-max ℓa ℓs) ℓ ℓ' (Null S)
-  bind bindNull α f = rec (isNull-Null _) f α
+  _>>=_ bindNull α f = rec (isNull-Null _) f α
+  return bindNull = ∣_∣

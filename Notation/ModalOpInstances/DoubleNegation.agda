@@ -5,6 +5,9 @@ open import Notation.ModalOperatorSugar
 
 module Notation.ModalOpInstances.DoubleNegation where
 
+open ModalOperator
+
 instance
-  ¬¬-modal : {ℓa ℓb : Level} → ModalOperator ℓ-zero ℓa ℓb (λ {ℓ} A → ¬ ¬ A)
-  ¬¬-modal = record { bind = λ nna f nb → nna (λ a → f a nb) }
+  ¬¬modal : ModalOperator ℓ-zero (λ {ℓ} A → ¬ ¬ A)
+  _>>=_ ¬¬modal ¬¬A f ¬B = ¬¬A (λ a → f a ¬B)
+  return ¬¬modal a ¬a = ¬a a
