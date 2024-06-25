@@ -1,5 +1,6 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Relation.Nullary
+open import Cubical.Foundations.Equiv
 
 open import Notation.Variables
 
@@ -17,3 +18,7 @@ StableΣ {P = P} As Aprop Ps e =
 
 ¬¬in : {A : Type ℓ} → A → ¬ ¬ A
 ¬¬in z = λ w → w z
+
+equivPresStable : {A : Type ℓ} {B : Type ℓ'} → A ≃ B → Stable A → Stable B
+equivPresStable e stabA ¬¬b = equivFun e (stabA (¬¬map (invEq e) ¬¬b))
+

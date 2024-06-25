@@ -36,13 +36,18 @@ record ∂ (D : PreDominance ℓ ℓ') (A : Type ℓ'') :
 open ∂ public
 
 module _ {ℓa : Level} {D : PreDominance ℓ ℓ'} {A : Type ℓa} where
+  isPropDomain : (α : ∂ D A) → isProp (α ↓)
+  isPropDomain α = onlyProps D (α ↓) (domainInD α)
+  
   isDefinedAnd : (α : ∂ D A) → (Z : A → Type ℓ'') → Type (ℓ-max ℓ ℓ'')
   isDefinedAnd α Z = Σ[ d ∈ α ↓ ] Z (∂.value α d)
 
-  isDefinedImplies : (α : ∂ D A) → (Z : A → Type ℓ') → Type (ℓ-max ℓ ℓ')
+  isDefinedImplies : (α : ∂ D A) → (Z : A → Type ℓ'') → Type (ℓ-max ℓ ℓ'')
   isDefinedImplies α Z = (d : α ↓) → Z (∂.value α d)
 
+  infix 2 isDefinedAnd
   syntax isDefinedAnd α (λ x → Z) = α ↓= x & Z
+  infix 1 isDefinedImplies
   syntax isDefinedImplies α (λ x → Z) = α ↓= x ⇒ Z
 
   ↓=&hLevel : (n : HLevel) (α : ∂ D A) {Z : A → Type ℓ''} →

@@ -1,5 +1,6 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Induction.WellFounded
+open import Cubical.Data.Nat.Base
 
 open import Types.NablaNat
 
