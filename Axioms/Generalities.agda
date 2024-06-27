@@ -27,12 +27,12 @@ module Axioms.Generalities
   {A : Type ℓa}
   (sepA : Separated A)
   (s : A → A → ∂ℕ∞ A)
-  (dense : (R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)) →
+  (dense : {ℓ : Level} → (R : A → A → hProp¬¬ ℓ) →
     ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁) →
     ∥ Σ[ e ∈ A ] ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → s e a ↓= b & ⟨ R a b ⟩) ∥₁)
   where
 
-totalVersion : (R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)) →
+totalVersion : (R : A → A → hProp¬¬ ℓ) →
   ((a : A) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁) →
   ∥ Σ[ e ∈ A ] ((a : A) → s e a ↓= b & ⟨ R a b ⟩) ∥₁
 totalVersion R total = do
@@ -42,8 +42,8 @@ totalVersion R total = do
 private
   setA = Separated→isSet sepA
 
-functionalVersion : (f : A → ∂¬¬ (ℓ-max ℓa ℓ) A) →
-  ∥ Σ[ e ∈ A ] ((a : A) → f a ↓= b ⇒ s e a ↓= c & c ≡ b) ∥₁
+functionalVersion : (f : A → ∂¬¬ ℓ A) →
+  ∥ Σ[ e ∈ A ] f ⊑ s e ∥₁
 functionalVersion f = do
   (b , bWorks) ← dense R Rtotal
   return (b , (λ a fa↓ →
@@ -61,18 +61,13 @@ functionalVersion f = do
         fa↓ : f a ↓
         fa↓ = ∂¬¬domainStable (f a) (¬¬map (fst ∘ snd) ¬¬ex)
 
-_⊑_ : {B : Type ℓb}
-  {Dom : PreDominance ℓ ℓ'} {Dom' : PreDominance ℓ'' ℓ'''} → (B → ∂ Dom A) →
-  (B → ∂ Dom' A) → Type (ℓ-max (ℓ-max (ℓ-max ℓa ℓ) ℓb) ℓ'')
-_⊑_ {B = B} f g = (b : B) → f b ↓= a ⇒ (g b ↓= c & (c ≡ a))
-
 module WithMP (mp : (α : ℕ∞) → Stable ⟨ α ⟩) where
-  twoArgFunVersion :  (f : A → A → ∂¬¬ (ℓ-max ℓ ℓa) A) →
-    ∥ Σ[ e ∈ A ] ((a : A) → s e a ↓= e' & ((b : A) → f a b ↓= c ⇒ s e' b ↓= d & d ≡ c)) ∥₁
+  twoArgFunVersion :  (f : A → A → ∂¬¬ ℓ A) →
+    ∥ Σ[ e ∈ A ] ((a : A) → s e a ↓= e' & f a ⊑ s e') ∥₁
   twoArgFunVersion f = totalVersion R Rtotal
     where
-      R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
-      hProp¬¬.P (R a e') = (b : A) → f a b ↓= c ⇒ s e' b ↓= d & d ≡ c
+      R : A → A → hProp¬¬ _
+      hProp¬¬.P (R a e') = f a ⊑ s e'
       hProp¬¬.isPropP (R a e') =
         isPropΠ (λ b → isPropΠ (λ _ → isPropΣ (isPropDomain (s e' b)) λ _ → setA _ _))
       hProp¬¬.StableP (R a e') =
@@ -89,13 +84,7 @@ module WithMP (mp : (α : ℕ∞) → Stable ⟨ α ⟩) where
     (e , eWorks) ← twoArgFunVersion g
     let (ee↓ , eWorks') = eWorks e
     let e₀ = value (s e e) ee↓
-    return (e₀ , λ b fe₀b↓ → eWorks' b (ee↓ , fe₀b↓))
+    return (e₀ , λ b fe₀b↓ → eWorks' b ((lift ee↓) , fe₀b↓))
     where
-      g : A → A → ∂¬¬ (ℓ-max ℓa ℓ) A
-      ∂._↓ (g a b) = s a a ↓= c & f c b ↓
-      ∂.domainInD (g a b) =
-        isPropΣ (isPropDomain (s a a)) (λ x → isPropDomain (f (value (s a a) x) b)) ,
-        (StableΣ (equivPresStable (invEquiv (snd (domainInD (s a a))))
-                                  (mp (fst (domainInD (s a a )))))
-                 (isPropDomain (s a a)) λ x → ∂¬¬domainStable (f (value (s a a ) x) b))
-      ∂.value (g a b) (saa↓ , fcb↓) = value (f (value (s a a) saa↓) b) fcb↓
+      g : A → A → ∂¬¬ _ A
+      g a b = ∂ℕ∞→∂¬¬ mp (s a a) >>= λ c → f c b

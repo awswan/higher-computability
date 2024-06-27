@@ -1,7 +1,10 @@
-open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Equiv
+open import Cubical.Relation.Nullary.Base
+open import CubicalExtras.Relation.Nullary.Properties
 open import Dominance.Base
+open import Dominance.DoubleNegation
 
 open import Cubical.Data.Nat
 open import Cubical.Data.Maybe
@@ -20,7 +23,7 @@ module Dominance.NatInf where
 
 open PreDominance
 
-ℕ∞Pred : PreDominance ℓ ℓ
+ℕ∞Pred : PreDominance ℓ-zero ℓ-zero
 inDom ℕ∞Pred P = Σ[ α ∈ ℕ∞ ] P ≃ ⟨ α ⟩
 onlyProps ℕ∞Pred P (α , e) =
   isOfHLevelRespectEquiv 1 (invEquiv e) (ℕ∞.unique α)
@@ -36,5 +39,14 @@ containsUnit ℕ∞Pred = ℕ→ℕ∞ 0 , invEquiv (isContr→≃Unit*
     ≃⟨ invEquiv (ℕ∞Σ≃ α (λ x → fst (d (invEq e x)))) ⟩
   ⟨ ℕ∞Σ α (λ x → fst (d (invEq e x))) ⟩ ■)
 
-∂ℕ∞ : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ))
+∂ℕ∞ : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ-zero))
 ∂ℕ∞ = ∂ ℕ∞Pred
+
+∂ℕ∞→∂¬¬ : (mp : (α : ℕ∞) → Stable ⟨ α ⟩) {A : Type ℓa} → ∂ℕ∞ A → ∂¬¬ ℓ A
+∂._↓ (∂ℕ∞→∂¬¬ mp α) = Lift (α ↓)
+∂.domainInD (∂ℕ∞→∂¬¬ mp α) = isOfHLevelLift 1 (isPropDomain α) ,
+  λ x → lift (equivPresStable (invEquiv (snd (domainInD α)))
+                              (mp (fst (domainInD α)))
+                              (¬¬map lower x))
+∂.value (∂ℕ∞→∂¬¬ mp α) x = value α (lower x)
+

@@ -69,3 +69,8 @@ instance
   _↓ (return ∂Bind a) = Unit*
   domainInD (return (∂Bind {Pred = Pred}) a) = containsUnit Pred
   value (return (∂Bind) b) _ = b
+
+_⊑_ : {A : Type ℓa} {B : Type ℓb}
+  {Dom : PreDominance ℓ ℓ'} {Dom' : PreDominance ℓ'' ℓ'''} → (B → ∂ Dom A) →
+  (B → ∂ Dom' A) → Type (ℓ-max (ℓ-max (ℓ-max ℓa ℓ) ℓb) ℓ'')
+_⊑_ {B = B} f g = (b : B) → f b ↓= a ⇒ (g b ↓= c & (c ≡ a))
