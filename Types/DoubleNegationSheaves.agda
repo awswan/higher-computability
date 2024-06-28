@@ -60,7 +60,7 @@ separated→isInj∇unit {ℓ = ℓ} sepA = isEmbedding→Inj (separatedEmbedsIn
 _⇓ : {A : Type ℓa} → ∇ {ℓ = ℓ} A → Type (ℓ-max ℓa (ℓ-suc ℓ))
 α ⇓ = fiber ∣_∣ α
 
-Dec⇓ : {A : Type ℓa} (P : hProp¬¬ ℓ) →
+Dec⇓ : (P : hProp¬¬ ℓ) →
   Σ[ β ∈ ∇ {ℓ = ℓ} Bool ] (Dec ⟨ P ⟩ ≃ β ⇓)
 Dec⇓ P = β , (propBiimpl→Equiv (isPropDec propP) (isEmbedding→hasPropFibers (separatedEmbedsIn∇ separatedBool) β) (λ x → (Dec→Bool x) , (sym (fib x))) fiberToDec)
   where
