@@ -45,9 +45,9 @@ module _ {ℓa : Level} {D : PreDominance ℓ ℓ'} {A : Type ℓa} where
   isDefinedImplies : (α : ∂ D A) → (Z : A → Type ℓ'') → Type (ℓ-max ℓ ℓ'')
   isDefinedImplies α Z = (d : α ↓) → Z (∂.value α d)
 
-  infix 2 isDefinedAnd
+  infixr 2 isDefinedAnd
   syntax isDefinedAnd α (λ x → Z) = α ↓= x & Z
-  infix 1 isDefinedImplies
+  infixr 1 isDefinedImplies
   syntax isDefinedImplies α (λ x → Z) = α ↓= x ⇒ Z
 
   ↓=&hLevel : (n : HLevel) (α : ∂ D A) {Z : A → Type ℓ''} →

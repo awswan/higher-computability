@@ -49,4 +49,3 @@ containsUnit ℕ∞Pred = ℕ→ℕ∞ 0 , invEquiv (isContr→≃Unit*
                               (mp (fst (domainInD α)))
                               (¬¬map lower x))
 ∂.value (∂ℕ∞→∂¬¬ mp α) x = value α (lower x)
-
