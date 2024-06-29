@@ -9,11 +9,8 @@ open import Notation.Variables
 
 module StrictlyCounted.Sum where
 
-instance
+abstract instance
   sCounted⊎ : {A : Type ℓ} {B : Type ℓ'} ⦃ ctdA : StrictlyCounted A ⦄
     ⦃ ctdB : StrictlyCounted B ⦄ → StrictlyCounted (A ⊎ B)
-  StrictlyCounted.equiv (sCounted⊎ ⦃ ctdA ⦄ ⦃ ctdB ⦄) =
-    invEquiv oddEvenEquiv ∙ₑ ⊎-equiv equivA equivB
-    where
-      equivA = StrictlyCounted.equiv ctdA
-      equivB = StrictlyCounted.equiv ctdB
+  StrictlyCounted.sCtdEquiv (sCounted⊎ {A = A} {B = B} ⦃ ctdA ⦄ ⦃ ctdB ⦄) =
+    invEquiv oddEvenEquiv ∙ₑ ⊎-equiv sCtdEquiv sCtdEquiv

@@ -20,14 +20,14 @@ module Dominance.Bool where
 
 open PreDominance
 
-opaque
-  BoolPred : PreDominance ℓ ℓ
-  inDom BoolPred P = Σ[ b ∈ Bool ] Bool→Type b ≃ P
-  onlyProps BoolPred P (b , e) = isOfHLevelRespectEquiv 1 e isPropBool→Type
-  containsUnit BoolPred = true , Unit≃Unit*
-  Σclosed BoolPred (b , e) Qdata =
-    ΣBool b (λ x → fst (Qdata (equivFun e x))) ,
-    ΣBool≃Σ ∙ₑ Σ-cong-equiv e λ x → snd (Qdata (equivFun e x))
+
+BoolPred : PreDominance ℓ ℓ
+inDom BoolPred P = Σ[ b ∈ Bool ] Bool→Type b ≃ P
+onlyProps BoolPred P (b , e) = isOfHLevelRespectEquiv 1 e isPropBool→Type
+containsUnit BoolPred = true , Unit≃Unit*
+Σclosed BoolPred (b , e) Qdata =
+  ΣBool b (λ x → fst (Qdata (equivFun e x))) ,
+  ΣBool≃Σ ∙ₑ Σ-cong-equiv e λ x → snd (Qdata (equivFun e x))
 
 ∂Bool : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ'))
 ∂Bool {ℓ' = ℓ'} = ∂ (BoolPred {ℓ = ℓ'})

@@ -8,4 +8,6 @@ module StrictlyCounted.Base where
 
 record StrictlyCounted (X : Type ℓ) : Type ℓ where
   field
-    equiv : ℕ ≃ X
+    sCtdEquiv : ℕ ≃ X
+
+open StrictlyCounted ⦃...⦄ public

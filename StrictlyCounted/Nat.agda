@@ -6,4 +6,4 @@ module StrictlyCounted.Nat where
 
 instance
   sCountedℕ : StrictlyCounted ℕ
-  StrictlyCounted.equiv sCountedℕ = idEquiv ℕ
+  StrictlyCounted.sCtdEquiv sCountedℕ = idEquiv ℕ

@@ -15,6 +15,6 @@ record Subcounted (ℓ' : Level) (X : Type ℓ)
   : Type (ℓ-max ℓ (ℓ-suc ℓ')) where
   field
     subEnum : ℕ → ∂¬¬ ℓ' X
-    allSubctd : (x : X) → ∥ Σ[ n ∈ ℕ ] subEnum n ↓= y & (y ≡ x) ∥₁
+    allSubctd : (x : X) → ∥ Σ[ n ∈ ℕ ] (subEnum n ↓= y & (y ≡ x)) ∥₁
 
 open Subcounted ⦃...⦄ public

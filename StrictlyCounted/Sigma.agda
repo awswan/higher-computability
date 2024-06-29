@@ -1,5 +1,6 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Equiv
+open import Cubical.Data.Nat.Base
 open import Cubical.Data.Sigma
 open import StrictlyCounted.Base
 
@@ -9,12 +10,9 @@ open import Notation.Variables
 
 module StrictlyCounted.Sigma where
 
-instance
-  sCountedΣ : {A : Type ℓ} {B : A → Type ℓ'} ⦃ ctdA : StrictlyCounted A ⦄
-    ⦃ ctdB : {a : A} → StrictlyCounted (B a) ⦄ → StrictlyCounted (Σ A B)
-  StrictlyCounted.equiv (sCountedΣ {A = A} {B} ⦃ ctdA ⦄ ⦃ ctdB ⦄) =
+abstract instance
+  sCountedΣ : {A : Type ℓ} {B : A → Type ℓ'} ⦃ _ : StrictlyCounted A ⦄
+    ⦃ _ : {a : A} → StrictlyCounted (B a) ⦄ → StrictlyCounted (Σ A B)
+  StrictlyCounted.sCtdEquiv sCountedΣ =
     invEquiv ℕPairEquiv ∙ₑ
-      Σ-cong-equiv equivA (λ n → equivB (equivFun equivA n))
-    where
-      equivA = StrictlyCounted.equiv ctdA
-      equivB = λ (a : A) → StrictlyCounted.equiv (ctdB {a})
+      Σ-cong-equiv sCtdEquiv (λ n → sCtdEquiv)

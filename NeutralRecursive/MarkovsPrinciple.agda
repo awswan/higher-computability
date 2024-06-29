@@ -5,7 +5,8 @@ open import Cubical.Foundations.Function
 open import Cubical.Relation.Nullary
 open import Cubical.Induction.WellFounded
 open import CubicalExtras.Relation.Nullary.Properties
-open import Cubical.HITs.Nullification
+open import Cubical.HITs.Nullification renaming (rec to nullRec)
+open import Cubical.HITs.PropositionalTruncation
 open import Cubical.Data.Nat
 open import Cubical.Data.Nat.Order
 open import Cubical.Data.Fin.Base
@@ -14,9 +15,12 @@ open import CubicalExtras.Data.Nat.Properties
 open import Cubical.Data.Empty renaming (rec to ⊥rec)
 open import Cubical.Data.Sigma.Properties
 open import Axioms.MarkovInduction
-open import Types.NablaNat
+
+open import Counted.Base
 
 open import Types.DoubleNegationSheaves
+open import Types.NablaNat
+
 
 open import Notation.ModalOperatorSugar
 open import Notation.ModalOpInstances.DoubleNegation
@@ -89,7 +93,7 @@ searchUnique {ℓ = ℓ} P isUnique dec ¬¬exists = do
       (λ (n , _) → ∣ n ∣) (n , p)
 
     lP : ∇ ℕ → Type ℓ
-    lP = fst ∘ rec (isNullNullTypes (DenseProps ℓ)  (snd ∘ fst) {ℓ})
+    lP = fst ∘ nullRec (isNullNullTypes (DenseProps ℓ)  (snd ∘ fst) {ℓ})
       (λ n → (P' n) ,
              (StableProp→Sheaf Stable¬ (isProp→ isProp⊥)))
 
@@ -142,3 +146,14 @@ search : (P : ℕ → Type ℓ)
   (¬¬exists : ¬ ¬ (Σ ℕ P)) → M (Σ ℕ P)
 search P dec ¬¬exists =
   searchFirst P dec ¬¬exists >>= λ (n , (p , _)) → return (n , p)
+
+searchCtd : {A : Type ℓa} ⦃ _ : Counted A ⦄
+  (P : A → Type ℓ) (dec : (a : A) → M (Dec (P a)))
+  (¬¬exists : NonEmpty (Σ A P)) → M (Σ A P)
+searchCtd P dec ¬¬exists = lemma >>= λ (n , p) → return ((enum n) , p)
+  where
+    lemma : M (Σ[ n ∈ ℕ ] P (enum n))
+    lemma = search (P ∘ enum) (dec ∘ enum)
+      (¬¬exists >>= λ (a , p) → rec (isProp¬ _)
+                         (λ (n , q) → ¬¬in (n , (subst P (sym q) p)))
+                                              (isSurjEnum a))
