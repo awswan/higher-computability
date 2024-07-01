@@ -14,11 +14,22 @@ module Types.NablaNat {ℓ : Level} where
 isSucc : ℕ → ℕ → NullType (DenseProps ℓ) {ℓ = ℓ}
 isSucc n m = Lift (suc n ≡ m) , StableProp→Sheaf (λ x → lift (separatedℕ (suc n) m (¬¬map lower x))) (isOfHLevelRespectEquiv 1 LiftEquiv (isSetℕ _ _)) -- StableProp→Sheaf _ (separatedℕ _ _) (isSetℕ _ _)
 
+isSucc₀ : ℕ → ℕ → NullType (DenseProps ℓ-zero) {ℓ = ℓ-zero}
+isSucc₀ n m = (suc n ≡ m) , (StableProp→Sheaf (λ x → separatedℕ (suc n) m x)
+                            (isSetℕ (suc n) m))
+
 isSucc∇ : ∇ ℕ → ∇ ℕ → NullType (DenseProps ℓ) {ℓ = ℓ}
 isSucc∇ =
   rec (isNullΠ λ _ → isNullNullTypes (DenseProps ℓ) (snd ∘ fst) {ℓ = ℓ})
       λ n → rec (isNullNullTypes (DenseProps ℓ) (snd ∘ fst) {ℓ = ℓ})
       λ m → isSucc n m -- isSucc n m
+
+isSucc∇₀ : ∇ {ℓ = ℓ-zero} ℕ → ∇ {ℓ = ℓ-zero}
+  ℕ → NullType (DenseProps ℓ-zero) {ℓ = ℓ-zero}
+isSucc∇₀ =
+  rec (isNullΠ (λ _ → isNullNullTypes (DenseProps ℓ-zero) λ ((_ , propP) , _) → propP))
+      λ n → rec (isNullNullTypes (DenseProps ℓ-zero) (λ ((_ , propP) , _) → propP))
+      (λ m → isSucc₀ n m)
 
 nonZeroToPredecessor : (ν : ∇ ℕ) → ¬ (ν ≡ ∣ 0 ∣) →
   Σ[ μ ∈ ∇ ℕ ] fst (isSucc∇ μ ν)
