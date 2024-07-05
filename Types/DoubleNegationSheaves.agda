@@ -1,15 +1,16 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Equiv.PathSplit
+open import Cubical.Foundations.Equiv.Properties
 open import Cubical.Foundations.Function
 open import Cubical.Foundations.HLevels
 open import Cubical.Functions.Embedding
 open import Cubical.Data.Bool
-open import Cubical.HITs.PropositionalTruncation
+open import Cubical.HITs.PropositionalTruncation renaming (rec to truncRec)
 open import Cubical.Relation.Nullary
 open import CubicalExtras.Relation.Nullary.Properties
 
-open import Cubical.Data.Empty
+open import Cubical.Data.Empty hiding (rec)
 
 open import Cubical.HITs.Nullification renaming (rec to nullRec)
 
@@ -26,14 +27,36 @@ DenseProps ℓ = fst ∘ fst
 ∇ : Type ℓ' → Type (ℓ-max ℓ' (ℓ-suc ℓ))
 ∇ {ℓ = ℓ} = Null (DenseProps ℓ)
 
+_≈_ : {A : Type ℓa} → ∇ {ℓ = ℓ} A → ∇ {ℓ = ℓ} A → Type (ℓ-max ℓa (ℓ-suc ℓ))
+_≈_ {ℓ = ℓ} α β = fst (E α β)
+  where
+    E : ∇ {ℓ = ℓ} A → ∇ {ℓ = ℓ} A → NullType (DenseProps ℓ)
+    E = nullRec (isNullΠ (λ x → isNullNullTypes (DenseProps ℓ) (snd ∘ fst)))
+      λ a → nullRec (isNullNullTypes (DenseProps ℓ) (snd ∘ fst))
+        (λ b → (∇ {ℓ = ℓ} (a ≡ b)) , isNull-Null (DenseProps ℓ))
+
 Sheaf : Type ℓ' → Type (ℓ-max ℓ' (ℓ-suc ℓ))
 Sheaf {ℓ = ℓ} = isNull (DenseProps ℓ)
 
+lowerSheaf : {A : Type ℓa} → Sheaf {ℓ = ℓ-max ℓ ℓ'} A → Sheaf {ℓ = ℓ} A
+lowerSheaf {ℓ = ℓ} {ℓ' = ℓ'} {A = A} shfA (P , ¬¬P) = fromIsEquiv const (snd e)
+  where
+    e : A ≃ (fst P → A)
+    e = A ≃⟨ const , (toIsEquiv const
+                     (shfA ((Lift {j = ℓ'} (fst P) ,
+                                  isOfHLevelLift 1 (snd P)) , ¬¬map lift ¬¬P))) ⟩
+        (Lift (fst P) → A) ≃⟨ preCompEquiv LiftEquiv ⟩
+        (fst P → A) ■
+
 open isPathSplitEquiv
 
-PropSheaf→Stable : {A : Type ℓ} → isProp A → Sheaf A → Stable A
-PropSheaf→Stable {A = A} propA shfA ¬¬A =
+propSheaf→Stable : {A : Type ℓ} → isProp A → Sheaf A → Stable A
+propSheaf→Stable {A = A} propA shfA ¬¬A =
   fst (sec (shfA ((A , propA) , ¬¬A))) (λ x → x)
+
+setSheaf→Separated : {A : Type ℓa} → isSet A → Sheaf A → Separated A
+setSheaf→Separated setA shfA a a' =
+  propSheaf→Stable (setA a a') (isNull≡ shfA) -- (lowerSheaf {ℓ' = ℓ} (isNull≡ shfA))
 
 StableProp→Sheaf : {A : Type ℓ'} → Stable A → isProp A → Sheaf {ℓ = ℓ} A
 StableProp→Sheaf stableA propA P =
@@ -83,3 +106,6 @@ Dec⇓ P = β , (propBiimpl→Equiv (isPropDec propP) (isEmbedding→hasPropFibe
     fiberToDec (true , p) = yes
       (hProp¬¬.StableP P (λ ¬q →
         true≢false (separated→isInj∇unit separatedBool _ _ (p ∙ fib (no ¬q)))))
+
+--SheafHProp¬¬ : Sheaf {ℓ = ℓ} (hProp¬¬ ℓ')
+--SheafHProp¬¬ = {!separatedSet→Sheaf!}

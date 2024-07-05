@@ -1,4 +1,5 @@
 open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.Function
 open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Equiv.Properties
 open import Cubical.Foundations.HLevels
@@ -48,17 +49,46 @@ instance
   hProp¬¬ToType : CoercesToType (hProp¬¬ ℓ) ℓ
   CoercesToType.getType hProp¬¬ToType = hProp¬¬.P
 
+hProp¬¬≡Equiv : (P Q : hProp¬¬ ℓ) → (P ≡ Q) ≃ (⟨ P ⟩ ≡ ⟨ Q ⟩)
+hProp¬¬≡Equiv P Q =
+  P ≡ Q
+    ≃⟨ congEquiv hProp¬¬AsΣ ⟩
+  equivFun hProp¬¬AsΣ P ≡ equivFun hProp¬¬AsΣ Q
+    ≃⟨ invEquiv (Σ≡PropEquiv (λ P → isPropΣ isPropIsProp λ propP → isPropΠ (λ _ → propP))) ⟩
+  ⟨ P ⟩ ≡ ⟨ Q ⟩ ■
+
+isSetHProp¬¬ : isSet (hProp¬¬ ℓ)
+isSetHProp¬¬ P Q = isOfHLevelRespectEquiv 1 (invEquiv (hProp¬¬≡Equiv P Q))
+                                            (isOfHLevel≡ 1 (hProp¬¬.isPropP P) (hProp¬¬.isPropP Q))
+
 hProp¬¬≡ : {P Q : hProp¬¬ ℓ} → (⟨ P ⟩ ≡ ⟨ Q ⟩) → P ≡ Q
-hProp¬¬≡ {P = P} {Q = Q} p =
-  invEq e (Σ≡Prop (λ X → isPropΣ isPropIsProp (λ propX → isPropΠ (λ _ → propX))) p)
-  where
-    e = congEquiv hProp¬¬AsΣ
+hProp¬¬≡ {P = P} {Q = Q} = invEq (hProp¬¬≡Equiv P Q)
+
+hProp¬¬≡' : {P Q : hProp¬¬ ℓ} → (⟨ P ⟩ → ⟨ Q ⟩) → (⟨ Q ⟩ → ⟨ P ⟩) → P ≡ Q
+hProp¬¬≡' {P = P} {Q = Q} f g =
+  hProp¬¬≡ (hPropExt (hProp¬¬.isPropP P) (hProp¬¬.isPropP Q) f g)
 
 separatedHProp¬¬ : Separated (hProp¬¬ ℓ)
 separatedHProp¬¬ P Q ¬¬P≡Q =
-  hProp¬¬≡ (hPropExt (hProp¬¬.isPropP P) (hProp¬¬.isPropP Q)
-                     (λ p → hProp¬¬.StableP Q (¬¬map (λ P≡Q → subst hProp¬¬.P P≡Q p) ¬¬P≡Q))
-                     (λ q → hProp¬¬.StableP P (¬¬map (λ P≡Q → subst hProp¬¬.P (sym P≡Q) q) ¬¬P≡Q)))
+  hProp¬¬≡' (λ p → hProp¬¬.StableP Q (¬¬map (λ P≡Q → subst hProp¬¬.P P≡Q p) ¬¬P≡Q))
+            (λ q → hProp¬¬.StableP P (¬¬map (λ P≡Q → subst hProp¬¬.P (sym P≡Q) q) ¬¬P≡Q))
+
+isInjectiveHProp¬¬ :
+  (P : hProp ℓ) → NonEmpty (fst P) → hasSection (const {A = hProp¬¬ ℓ} {B = fst P})
+hProp¬¬.P (fst (isInjectiveHProp¬¬ P ¬¬P) f) =
+  (p : fst P) → hProp¬¬.P (f p)
+hProp¬¬.isPropP (fst (isInjectiveHProp¬¬ P ¬¬P) f) = isPropΠ (λ p → hProp¬¬.isPropP (f p))
+hProp¬¬.StableP (fst (isInjectiveHProp¬¬ P ¬¬P) f) = StableΠ (λ p → hProp¬¬.StableP (f p))
+snd (isInjectiveHProp¬¬ P ¬¬P) f =
+  funExt (λ p → hProp¬¬≡ (ua (e p)))
+  where
+    e : (p : fst P) → ((p : fst P) → hProp¬¬.P (f p)) ≃ ⟨ f p ⟩
+    e p =
+      ((p : fst P) → hProp¬¬.P (f p))
+        ≃⟨ invEquiv (equivΠ (invEquiv (isContr→≃Unit (inhProp→isContr p (snd P))))
+                            (λ _ → idEquiv _)) ⟩
+      (Unit → ⟨ f p ⟩) ≃⟨ ΠUnit _ ⟩
+      ⟨ f p ⟩ ■
 
 Σ¬¬ : (P : hProp¬¬ ℓ) → (Q : ⟨ P ⟩ → hProp¬¬ ℓ') → hProp¬¬ (ℓ-max ℓ ℓ')
 hProp¬¬.P (Σ¬¬ P Q) = Σ[ p ∈ ⟨ P ⟩ ] ⟨ Q p ⟩

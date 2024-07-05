@@ -3,14 +3,17 @@ open import Cubical.Induction.WellFounded
 open import Cubical.Data.Nat.Base
 
 open import Types.NablaNat
+open import Types.PropNegNeg
 
 open import Notation.ModalOperatorSugar
+open import Notation.CoercesToType
 
 open import Types.DoubleNegationSheaves
 
 module Axioms.MarkovInduction {ℓ : Level} where
 
-postulate
-  wellFounded∇Suc : WellFounded {ℓ' = ℓ} (λ μ ν → fst (isSucc∇ μ ν))
-  
-markovInduction = WFI.induction wellFounded∇Suc
+record MarkovInduction : Type (ℓ-suc ℓ) where
+  field
+    markovInduction : WellFounded {ℓ' = ℓ} (λ μ ν →  ⟨ isSuc∇₀ μ ν ⟩)
+
+open MarkovInduction ⦃...⦄ public

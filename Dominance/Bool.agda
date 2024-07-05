@@ -3,12 +3,12 @@ open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Function
 open import Cubical.Foundations.Univalence
+open import Cubical.Relation.Nullary.Base
 
 open import Cubical.Functions.Embedding
 
 open import Cubical.Data.Bool
 open import CubicalExtras.Data.Bool.Properties
-open import Cubical.Data.Empty
 open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
 
@@ -31,3 +31,17 @@ containsUnit BoolPred = true , Unit≃Unit*
 
 ∂Bool : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ'))
 ∂Bool {ℓ' = ℓ'} = ∂ (BoolPred {ℓ = ℓ'})
+
+isDefinedAndDec : {A : Type ℓa} {P : A → Type ℓ} →
+  ((a : A) → Dec (P a)) → (α : ∂Bool {ℓ' = ℓ} A) → Dec (α ↓= a & P a)
+isDefinedAndDec {ℓ = ℓ} {P = P} dec α = helper (domainInD α)
+  where
+    helper : (x : inDom BoolPred (α ↓)) → Dec (α ↓= a & P a)
+    helper (false , e) = no (λ (α↓ , _) → invEq e α↓)
+    helper (true , e) =
+      decRec (λ p → yes (α↓ , p))
+             (λ ¬p → no (λ (α↓' , p) → ¬p (subst (P ∘ value α) (isPropDomain α α↓' α↓) p)))
+             (dec (value α α↓))
+      where
+        α↓ : α ↓
+        α↓ = equivFun e tt
