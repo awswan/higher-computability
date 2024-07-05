@@ -5,6 +5,7 @@ open import Cubical.Foundations.Equiv.PathSplit
 open import Cubical.Foundations.Equiv.Properties
 open import Cubical.Foundations.Function
 open import Cubical.Foundations.Univalence
+open import Cubical.Functions.FunExtEquiv
 open import Cubical.Relation.Nullary
 open import CubicalExtras.Relation.Nullary.Properties
 open import Cubical.Reflection.StrictEquiv
@@ -21,7 +22,7 @@ open import Notation.ModalOpInstances.DoubleNegation
 
 module Types.NablaZero where
 
-record ∇₀ (A : Type ℓa) : Type (ℓ-suc (ℓ-max ℓa ℓ)) where
+record ∇₀ (A : Type ℓa) : Type (ℓ-max ℓa (ℓ-suc ℓ)) where
   field
     isThis : A → hProp¬¬ ℓ
     wellDefd : (a a' : A) → ⟨ isThis a ⟩ →
@@ -59,11 +60,20 @@ separated∇₀ {A = A} α β ¬¬p = invEq e
 isSet∇₀ : isSet (∇₀ {ℓ = ℓ} A)
 isSet∇₀ = Separated→isSet separated∇₀
 
+∇₀≡Equiv : {α β : ∇₀ {ℓ = ℓ} A} → (α ≡ β) ≃ ((a : A) → isThis α a ≡ isThis β a)
+∇₀≡Equiv {A = A} {α = α} {β = β} =
+  α ≡ β ≃⟨ congEquiv (∇₀asΣ A) ⟩
+  equivFun (∇₀asΣ A) α ≡ equivFun (∇₀asΣ A) β
+    ≃⟨ invEquiv (Σ≡PropEquiv (λ P → isProp× (isPropΠ4 (λ _ _ _ _ → isProp¬ _))
+                                            (isProp¬ _))) ⟩
+  (λ a → isThis α a) ≡ (λ a → isThis β a) ≃⟨ invEquiv funExtEquiv ⟩
+  ((a : A) → isThis α a ≡ isThis β a) ■
+
+∇₀≡Equiv' : {α β : ∇₀ {ℓ = ℓ} A} → (α ≡ β) ≃ ((a : A) → ⟨ isThis α a ⟩ ≃ ⟨ isThis β a ⟩)
+∇₀≡Equiv' = ∇₀≡Equiv ∙ₑ equivΠ (idEquiv _) (λ a → hProp¬¬≡Equiv' _ _)
+
 ∇₀≡ : {α β : ∇₀ {ℓ = ℓ} A} → ((a : A) → isThis α a ≡ isThis β a) → α ≡ β
-∇₀≡ {A = A} {α} {β} p =
-  invEq e (Σ≡Prop (λ x → isProp× (isPropΠ4 λ _ _ _ _ → isProp¬ _) (isProp¬ _)) (funExt p))
-  where
-    e  = congEquiv (∇₀asΣ A)
+∇₀≡ {A = A} {α} {β} = invEq ∇₀≡Equiv
 
 ∇₀∩→ : (α β : ∇₀ {ℓ = ℓ} A) (a : A) → ⟨ ∇₀.isThis α a ⟩ → ⟨ ∇₀.isThis β a ⟩ →
   (a' : A) → ⟨ ∇₀.isThis α a' ⟩ → ⟨ ∇₀.isThis β a' ⟩
@@ -141,8 +151,6 @@ module Rec {ℓa ℓ : Level} {A : Type ℓa} {B : Type ℓb}
         return (cong f q ∙∙ funExt⁻ p a ∙∙ cong g (sym q))
   snd (secCong (∇₀recEquiv) f g) r =
       isSet→ Bset (f ∘ ∇₀unit) (g ∘ ∇₀unit) _ r
-
-open Rec public
 
 sheafHProp¬¬ : Sheaf (hProp¬¬ ℓ)
 sheafHProp¬¬ {ℓ = ℓ} =

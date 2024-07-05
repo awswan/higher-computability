@@ -57,6 +57,9 @@ hProp¬¬≡Equiv P Q =
     ≃⟨ invEquiv (Σ≡PropEquiv (λ P → isPropΣ isPropIsProp λ propP → isPropΠ (λ _ → propP))) ⟩
   ⟨ P ⟩ ≡ ⟨ Q ⟩ ■
 
+hProp¬¬≡Equiv' : (P Q : hProp¬¬ ℓ) → (P ≡ Q) ≃ (⟨ P ⟩ ≃ ⟨ Q ⟩)
+hProp¬¬≡Equiv' P Q = hProp¬¬≡Equiv P Q ∙ₑ univalence
+
 isSetHProp¬¬ : isSet (hProp¬¬ ℓ)
 isSetHProp¬¬ P Q = isOfHLevelRespectEquiv 1 (invEquiv (hProp¬¬≡Equiv P Q))
                                             (isOfHLevel≡ 1 (hProp¬¬.isPropP P) (hProp¬¬.isPropP Q))
