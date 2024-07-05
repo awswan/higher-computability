@@ -10,9 +10,9 @@ open import Notation.CoercesToType
 
 open import Types.DoubleNegationSheaves
 
-module Axioms.MarkovInduction {ℓ : Level} where
+module Axioms.MarkovInduction where
 
-record MarkovInduction : Type (ℓ-suc ℓ) where
+record MarkovInduction (ℓ : Level) : Type (ℓ-suc ℓ) where
   field
     markovInduction : WellFounded {ℓ' = ℓ} (λ μ ν →  ⟨ isSuc∇₀ μ ν ⟩)
 

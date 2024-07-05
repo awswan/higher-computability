@@ -34,56 +34,56 @@ module Fixed {A : Type ℓ}
   ifMaximal : ((b b' : B) → F b ⊑ b' → F b ≡ b') → ∥ Σ[ b ∈ B ] F b ≡ b ∥₁
   ifMaximal maxF = map (λ (a₀ , p) → (s a₀ a₀) , (maxF _ _ (p a₀))) (sDense t)
 
-_⊑_ : {A : Type ℓa} {B : Type ℓb}
-  {Dom : PreDominance ℓ ℓ'} → (A → ∂ Dom B) →
-  (A → ∂ Dom B) → Type (ℓ-max (ℓ-max ℓa ℓb) ℓ)
-_⊑_ {A = A} {B = B} f g = (a : A) → f a ↓= b ⇒ (g a ↓= c & (c ≡ b))
+-- _⊑_ : {A : Type ℓa} {B : Type ℓb}
+--   {Dom : PreDominance ℓ ℓ'} → (A → ∂ Dom B) →
+--   (A → ∂ Dom B) → Type (ℓ-max (ℓ-max ℓa ℓb) ℓ)
+-- _⊑_ {A = A} {B = B} f g = (a : A) → f a ↓= b ⇒ (g a ↓= c & (c ≡ b))
 
 
 
--- mvFixed : {A : Type ℓa}
---   (sepA : Separated A)
---   (s : A → (A → ∂¬¬ ℓ A))
---   (sMultiDense :
---     (R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)) →
---     ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁) →
---     ∥ Σ[ e ∈ A ] ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → s e a ↓= b & ⟨ R a b ⟩) ∥₁ )
---   (F : A → A → ∂¬¬ ℓ A) →
---   ∥ Σ[ e ∈ A ] F e ⊑ s e ∥₁
+mvFixed : {A : Type ℓa}
+  (sepA : Separated A)
+  (s : A → (A → ∂¬¬ ℓ A))
+  (sMultiDense :
+    (R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)) →
+    ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁) →
+    ∥ Σ[ e ∈ A ] ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → s e a ↓= b & ⟨ R a b ⟩) ∥₁ )
+  (F : A → A → ∂¬¬ ℓ A) →
+  ∥ Σ[ e ∈ A ] F e ⊑ s e ∥₁
 
--- mvFixed {ℓa = ℓa} {ℓ = ℓ} {A = A} sepA s sMultiDense F = {!!}
---   where
---     R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
---     hProp¬¬.P (R a b) = (c : A) → s a a ↓= d ⇒ (F d c ↓= e ⇒ (s b c ↓= f & (f ≡ e)))
---     hProp¬¬.isPropP (R a b) =
---       isPropΠ3 (λ c _ e → isPropΣ (isPropDomain (s b c)) λ _ → Separated→isSet sepA _ _)
---     hProp¬¬.StableP (R a b) =
---       StableΠ (λ c → StableΠ (λ _ → StableΠ λ x → 
---         isDefinedAndStable (s b c) λ d → sepA d (value (F _ _) x)))
+mvFixed {ℓa = ℓa} {ℓ = ℓ} {A = A} sepA s sMultiDense F = {!!}
+  where
+    R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
+    hProp¬¬.P (R a b) = (c : A) → s a a ↓= d ⇒ (F d c ↓= e ⇒ (s b c ↓= f & (f ≡ e)))
+    hProp¬¬.isPropP (R a b) =
+      isPropΠ3 (λ c _ e → isPropΣ (isPropDomain (s b c)) λ _ → Separated→isSet sepA _ _)
+    hProp¬¬.StableP (R a b) =
+      StableΠ (λ c → StableΠ (λ _ → StableΠ λ x → 
+        isDefinedAndStable (s b c) λ d → sepA d (value (F _ _) x)))
 
---     totalR : (a : A) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁
---     totalR a = do
---       (b , bWorks) ← sMultiDense R' R'total
---       return (b , (λ c y z → {!!} , {!!}))
---       where
---         R' : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
---         hProp¬¬.P (R' c f) = s a a ↓= d & (F d c ↓= e & (f ≡ e))
---         hProp¬¬.isPropP (R' c f) =
---           isPropΣ (isPropDomain (s a a))
---                   (λ x → isPropΣ (isPropDomain (F (value (s a a) x) c))
---                   λ _ → Separated→isSet sepA _ _)
---         hProp¬¬.StableP (R' c f) = isDefinedAndStable (s a a)
---           λ d → isDefinedAndStable (F d c) λ e → sepA f e
+    totalR : (a : A) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁
+    totalR a = do
+      (b , bWorks) ← sMultiDense R' R'total
+      return (b , (λ c y z → {!!} , {!!}))
+      where
+        R' : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
+        hProp¬¬.P (R' c f) = s a a ↓= d & (F d c ↓= e & (f ≡ e))
+        hProp¬¬.isPropP (R' c f) =
+          isPropΣ (isPropDomain (s a a))
+                  (λ x → isPropΣ (isPropDomain (F (value (s a a) x) c))
+                  λ _ → Separated→isSet sepA _ _)
+        hProp¬¬.StableP (R' c f) = isDefinedAndStable (s a a)
+          λ d → isDefinedAndStable (F d c) λ e → sepA f e
         
---         R'total : (c : A) → NonEmpty (Σ[ f ∈ A ] ⟨ R' c f ⟩) → ∥ Σ[ f ∈ A ] ⟨ R' c f ⟩ ∥₁
---         R'total c ¬¬fr = ∣ (value (F d c) (snd bothDefd)) ,
---                            (fst bothDefd) , ((snd bothDefd) , refl) ∣₁
---           where
---             bothDefd : s a a ↓= d & (F d c ↓)
---             bothDefd = isDefinedAndStable (s a a) (λ d → ∂domainStable (F d c))
---                                           (¬¬map (λ (f , (x , (y , _))) → (x , y)) ¬¬fr)
+        R'total : (c : A) → NonEmpty (Σ[ f ∈ A ] ⟨ R' c f ⟩) → ∥ Σ[ f ∈ A ] ⟨ R' c f ⟩ ∥₁
+        R'total c ¬¬fr = ∣ (value (F d c) (snd bothDefd)) ,
+                           (fst bothDefd) , ((snd bothDefd) , refl) ∣₁
+          where
+            bothDefd : s a a ↓= d & (F d c ↓)
+            bothDefd = isDefinedAndStable (s a a) (λ d → ∂¬¬domainStable (F d c))
+                                          (¬¬map (λ (f , (x , (y , _))) → (x , y)) ¬¬fr)
 
---             d = value (s a a) (fst bothDefd)
+            d = value (s a a) (fst bothDefd)
 
     -- open PreDominance (¬¬PreDom ℓ)
     -- diag : A → A → ∂¬¬ ℓ A

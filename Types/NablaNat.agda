@@ -20,7 +20,7 @@ hProp¬¬.isPropP (isSuc n m) = isOfHLevelLift 1 (isSetℕ (suc n) m)
 hProp¬¬.StableP (isSuc n m) ¬¬p = lift (separatedℕ (suc n) m (¬¬map lower ¬¬p))
 
 isSuc∇₀ : ∇₀ {ℓ = ℓ} ℕ → ∇₀ {ℓ = ℓ} ℕ → hProp¬¬ ℓ
-isSuc∇₀ = ExtendBinaryRelation.R̃ ℕ isSuc
+isSuc∇₀ = extendBinaryRelation ℕ isSuc
 
 nonZeroToPredecessor : (ν : ∇₀ ℕ) → ¬ ⟨ ∇₀.isThis ν 0 ⟩ →
   Σ[ μ ∈ (∇₀ ℕ) ] ⟨ isSuc∇₀ μ ν ⟩

@@ -12,6 +12,9 @@ open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
 open import Cubical.Data.Fin
 
+open import Axioms.MarkovInduction
+open import NeutralRecursive.MarkovsPrinciple
+
 open import Types.NatInf
 
 open import Notation.CoercesToType
@@ -42,10 +45,10 @@ containsUnit ℕ∞Pred = ℕ→ℕ∞ 0 , invEquiv (isContr→≃Unit*
 ∂ℕ∞ : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ-zero))
 ∂ℕ∞ = ∂ ℕ∞Pred
 
-∂ℕ∞→∂¬¬ : (mp : (α : ℕ∞) → Stable ⟨ α ⟩) {A : Type ℓa} → ∂ℕ∞ A → ∂¬¬ ℓ A
-∂._↓ (∂ℕ∞→∂¬¬ mp α) = Lift (α ↓)
-∂.domainInD (∂ℕ∞→∂¬¬ mp α) = isOfHLevelLift 1 (isPropDomain α) ,
+∂ℕ∞→∂¬¬ : ⦃ _ : MarkovInduction ℓ-zero ⦄ {A : Type ℓa} → ∂ℕ∞ A → ∂¬¬ ℓ A
+∂._↓ (∂ℕ∞→∂¬¬ α) = Lift (α ↓)
+∂.domainInD (∂ℕ∞→∂¬¬ {ℓ = ℓ} ⦃ mi ⦄ α) = isOfHLevelLift 1 (isPropDomain α) ,
   λ x → lift (equivPresStable (invEquiv (snd (domainInD α)))
-                              (mp (fst (domainInD α)))
+                              (Stable⟨ℕ∞⟩ (fst (domainInD α)))
                               (¬¬map lower x))
-∂.value (∂ℕ∞→∂¬¬ mp α) x = value α (lower x)
+∂.value (∂ℕ∞→∂¬¬ α) x = value α (lower x)

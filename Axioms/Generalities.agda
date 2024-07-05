@@ -16,6 +16,8 @@ open import Dominance.NatInf
 open import Types.PropNegNeg
 open import Types.NatInf
 
+open import Axioms.MarkovInduction
+
 open import NeutralRecursive.MarkovsPrinciple
 
 open import Notation.Variables
@@ -61,7 +63,7 @@ functionalVersion f = do
         fa↓ : f a ↓
         fa↓ = ∂¬¬domainStable (f a) (¬¬map (fst ∘ snd) ¬¬ex)
 
-module WithMP (mp : (α : ℕ∞) → Stable ⟨ α ⟩) where
+module WithMP ⦃ _ : MarkovInduction ℓ-zero ⦄ where
   twoArgFunVersion :  (f : A → A → ∂¬¬ ℓ A) →
     ∥ Σ[ e ∈ A ] ((a : A) → s e a ↓= e' & f a ⊑ s e') ∥₁
   twoArgFunVersion f = totalVersion R Rtotal
@@ -74,7 +76,7 @@ module WithMP (mp : (α : ℕ∞) → Stable ⟨ α ⟩) where
         StableΠ (λ b → StableΠ
           (λ x → StableΣ
             (equivPresStable (invEquiv (snd (domainInD (s e' b))))
-              (mp (fst (domainInD (s e' b))))) (isPropDomain (s e' b)) λ _ → sepA _ _))
+              (Stable⟨ℕ∞⟩ (fst (domainInD (s e' b))))) (isPropDomain (s e' b)) λ _ → sepA _ _))
   
       Rtotal : (a : A) → ∥ Σ[ e' ∈ A ] ⟨ R a e' ⟩ ∥₁
       Rtotal a = functionalVersion (f a)
@@ -87,4 +89,4 @@ module WithMP (mp : (α : ℕ∞) → Stable ⟨ α ⟩) where
     return (e₀ , λ b fe₀b↓ → eWorks' b ((lift ee↓) , fe₀b↓))
     where
       g : A → A → ∂¬¬ _ A
-      g a b = ∂ℕ∞→∂¬¬ mp (s a a) >>= λ c → f c b
+      g a b = ∂ℕ∞→∂¬¬ (s a a) >>= λ c → f c b

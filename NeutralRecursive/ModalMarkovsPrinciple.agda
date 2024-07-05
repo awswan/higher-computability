@@ -32,18 +32,17 @@ open import Notation.ModalOperatorSugar
 open import Notation.ModalOpInstances.DoubleNegation
 open import Notation.Variables
 
-module NeutralRecursive.MarkovsPrinciple
+module NeutralRecursive.ModalMarkovsPrinciple
   {ℓbase : Level}
   (M : {ℓ : Level} → Type ℓ → Type (ℓ-max ℓbase ℓ))
   ⦃ _ : ModalOperator ℓbase M ⦄
-  ⦃ _ : {ℓ' : Level} → MarkovInduction {ℓ = ℓ'} ⦄
   where
 
 private
   mpInst : ∇₀ {ℓ = ℓ} ℕ → Type (ℓ-max ℓbase ℓ)
   mpInst ν = ((n : ℕ) → M (Dec (⟨ ∇₀.isThis ν n ⟩))) → M (ν ⇓₀)
 
-locatedToDefined : (ν : ∇₀ {ℓ = ℓ} ℕ) → mpInst ν
+locatedToDefined : ⦃ _ : MarkovInduction ℓ ⦄ (ν : ∇₀ {ℓ = ℓ} ℕ) → mpInst ν
 locatedToDefined {ℓ = ℓ} = WFI.induction markovInduction step
   where
     step : (ν : ∇₀ ℕ) → ((μ : ∇₀ ℕ) → ⟨ isSuc∇₀ μ ν ⟩ → mpInst μ) →
@@ -63,7 +62,9 @@ locatedToDefined {ℓ = ℓ} = WFI.induction markovInduction step
             where no ¬p → return (no λ q → ¬p (definedToSuc μ ν is m q))
           return (yes (definedToPred μ ν is m p))
 
-searchUnique : (P : ℕ → Type ℓ)
+searchUnique :
+  ⦃ _ : MarkovInduction ℓ ⦄
+  (P : ℕ → Type ℓ)
   (isUnique : (m n : ℕ) → (P m) → (P n) → m ≡ n)
   (dec : (n : ℕ) → M (Dec (P n)))
   (¬¬exists : ¬ ¬ (Σ ℕ P)) → M (Σ ℕ P)
@@ -104,7 +105,9 @@ boundedSearch P dec (suc n) = do
                (λ m≡n → subst (λ z → ¬ (P z)) (sym m≡n) ¬pn)
                (<-split m<n)))
 
-searchFirst : (P : ℕ → Type ℓ)
+searchFirst :
+  ⦃ _ : MarkovInduction ℓ ⦄
+  (P : ℕ → Type ℓ)
   (dec : (n : ℕ) → M (Dec (P n)))
   (¬¬exists : ¬ ¬ (Σ ℕ P)) → M (Σ ℕ (leastSuch P))
 searchFirst P dec ¬¬exists =
@@ -123,13 +126,15 @@ searchFirst P dec ¬¬exists =
       convertEx : ¬ (Σ ℕ (leastSuch P)) → (n : ℕ) → ¬ (P n)
       convertEx z = WFI.induction <-wellfounded λ n w v → z (n , (v , w))
 
-search : (P : ℕ → Type ℓ)
+search : ⦃ _ : MarkovInduction ℓ ⦄
+  (P : ℕ → Type ℓ)
   (dec : (n : ℕ) → M (Dec (P n)))
   (¬¬exists : ¬ ¬ (Σ ℕ P)) → M (Σ ℕ P)
 search P dec ¬¬exists =
   searchFirst P dec ¬¬exists >>= λ (n , (p , _)) → return (n , p)
 
-searchCtd : {A : Type ℓa} ⦃ _ : Counted A ⦄
+searchCtd : ⦃ _ : MarkovInduction ℓ ⦄
+  {A : Type ℓa} ⦃ _ : Counted A ⦄
   (P : A → Type ℓ) (dec : (a : A) → M (Dec (P a)))
   (¬¬exists : NonEmpty (Σ A P)) → M (Σ A P)
 searchCtd P dec ¬¬exists = lemma >>= λ (n , (enumn↓ , p)) → return ((value (enum n) enumn↓) , p)

@@ -2,10 +2,7 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Function
-open import Cubical.Foundations.Univalence
 open import Cubical.Relation.Nullary.Base
-
-open import Cubical.Functions.Embedding
 
 open import Cubical.Data.Bool
 open import CubicalExtras.Data.Bool.Properties
