@@ -26,15 +26,19 @@ open import Notation.CoercesToType
 
 module Axioms.ComputableChoice where
 
-postulate
-  φ : ℕ → ℕ → ∂ℕ∞ ℕ
-
-  ComputableChoice : (R : ℕ → ℕ → hProp¬¬ ℓ) →
-    ((n : ℕ) → ¬ ¬ (Σ[ m ∈ ℕ ] ⟨ R n m ⟩) → ∥ Σ[ m ∈ ℕ ] ⟨ R n m ⟩ ∥₁) →
-    ∥ Σ[ e ∈ ℕ ] ((n : ℕ) → ¬ ¬ (Σ[ m ∈ ℕ ] ⟨ R n m ⟩) →
-                     φ e n ↓= m & ⟨ R n m ⟩) ∥₁
+record ComputableChoice : Typeω where
+  field
+    φ : ℕ → ℕ → ∂ℕ∞ ℕ
   
-ComputableChoice' :
+    computableChoice : (R : ℕ → ℕ → hProp¬¬ ℓ) →
+      ((n : ℕ) → ¬ ¬ (Σ[ m ∈ ℕ ] ⟨ R n m ⟩) → ∥ Σ[ m ∈ ℕ ] ⟨ R n m ⟩ ∥₁) →
+      ∥ Σ[ e ∈ ℕ ] ((n : ℕ) → ¬ ¬ (Σ[ m ∈ ℕ ] ⟨ R n m ⟩) →
+                       φ e n ↓= m & ⟨ R n m ⟩) ∥₁
+
+open ComputableChoice ⦃...⦄ public
+
+computableChoice' :
+  ⦃ _ : ComputableChoice ⦄
   (D : ℕ → Type ℓ) (DProp : (n : ℕ) → isProp (D n))
   (DStab : (n : ℕ) → Stable (D n))
   (P : (n : ℕ) → (d : D n) → ℕ → Type ℓ')
@@ -45,7 +49,7 @@ ComputableChoice' :
   ∥ Σ[ e ∈ ℕ ] ((n : ℕ) → (d : D n) →
                    φ e n ↓= m & P n d m) ∥₁
 
-ComputableChoice' D DProp DStab P PProp PStab Pinh =
+computableChoice' D DProp DStab P PProp PStab Pinh =
   map (λ (e , f) → e ,
     (λ n d → map-snd (λ (d' , p) → subst (λ d → P n d _) (DProp n _ _) p)
                      (f n (rec (isPropΠ (λ _ → isProp⊥))
@@ -68,7 +72,7 @@ ComputableChoice' D DProp DStab P PProp PStab Pinh =
 
     CCinstance : ∥ Σ[ e ∈ ℕ ] ((n : ℕ) →  ¬ ¬ (Σ[ m ∈ ℕ ] ⟨ R' n m ⟩) →
       φ e n ↓= m & ⟨ R' n m ⟩) ∥₁
-    CCinstance = ComputableChoice R' R'inh
+    CCinstance = computableChoice R' R'inh
 
 -- ECT : (f : ℕ → ∂¬¬ ℓ ℕ) → ∥ (Σ[ e ∈ ℕ ] ((n : ℕ) → f n ⊑ φ e n)) ∥₁
 -- ECT {ℓ = ℓ} f = {!!} -- map (λ (e , z) → e , {!!}) (ComputableChoice R Rdefd)

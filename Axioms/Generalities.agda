@@ -27,14 +27,15 @@ open import Notation.CoercesToType
 
 module Axioms.Generalities
   {A : Type ℓa}
+  {ℓ : Level}
   (sepA : Separated A)
   (s : A → A → ∂ℕ∞ A)
-  (dense : {ℓ : Level} → (R : A → A → hProp¬¬ ℓ) →
+  (dense : (R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)) →
     ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁) →
     ∥ Σ[ e ∈ A ] ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → s e a ↓= b & ⟨ R a b ⟩) ∥₁)
   where
 
-totalVersion : (R : A → A → hProp¬¬ ℓ) →
+totalVersion : (R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)) →
   ((a : A) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁) →
   ∥ Σ[ e ∈ A ] ((a : A) → s e a ↓= b & ⟨ R a b ⟩) ∥₁
 totalVersion R total = do
