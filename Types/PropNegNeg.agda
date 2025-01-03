@@ -5,7 +5,7 @@ open import Cubical.Foundations.Equiv.Properties
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Isomorphism
 open import Cubical.Foundations.Univalence
-open import CubicalExtras.Relation.Nullary.Properties
+open import Cubical.Relation.Nullary.Properties
 
 open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
@@ -18,6 +18,8 @@ open import Cubical.Reflection.StrictEquiv
 
 open import Notation.CoercesToType
 open import Notation.Variables
+
+open import Util.DoubleNegation
 
 module Types.PropNegNeg where
 

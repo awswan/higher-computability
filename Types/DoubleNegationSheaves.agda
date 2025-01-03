@@ -1,5 +1,6 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.Equiv.Fiberwise
 open import Cubical.Foundations.Equiv.PathSplit
 open import Cubical.Foundations.Equiv.Properties
 open import Cubical.Foundations.Function
@@ -8,16 +9,18 @@ open import Cubical.Functions.Embedding
 open import Cubical.Data.Bool
 open import Cubical.HITs.PropositionalTruncation renaming (rec to truncRec)
 open import Cubical.Relation.Nullary
-open import CubicalExtras.Relation.Nullary.Properties
+open import Cubical.Relation.Nullary.Properties
 
 open import Cubical.Data.Empty hiding (rec)
 
-open import Cubical.HITs.Nullification renaming (rec to nullRec)
+open import Cubical.HITs.Nullification renaming (rec to nullRec ; elim to nullElim)
 
 open import Types.PropNegNeg
 
 open import Notation.CoercesToType
 open import Notation.Variables
+
+open import Util.DoubleNegation
 
 module Types.DoubleNegationSheaves where
 
@@ -26,14 +29,6 @@ DenseProps ℓ = fst ∘ fst
 
 ∇ : Type ℓ' → Type (ℓ-max ℓ' (ℓ-suc ℓ))
 ∇ {ℓ = ℓ} = Null (DenseProps ℓ)
-
-_≈_ : {A : Type ℓa} → ∇ {ℓ = ℓ} A → ∇ {ℓ = ℓ} A → Type (ℓ-max ℓa (ℓ-suc ℓ))
-_≈_ {ℓ = ℓ} α β = fst (E α β)
-  where
-    E : ∇ {ℓ = ℓ} A → ∇ {ℓ = ℓ} A → NullType (DenseProps ℓ)
-    E = nullRec (isNullΠ (λ x → isNullNullTypes (DenseProps ℓ) (snd ∘ fst)))
-      λ a → nullRec (isNullNullTypes (DenseProps ℓ) (snd ∘ fst))
-        (λ b → (∇ {ℓ = ℓ} (a ≡ b)) , isNull-Null (DenseProps ℓ))
 
 Sheaf : Type ℓ' → Type (ℓ-max ℓ' (ℓ-suc ℓ))
 Sheaf {ℓ = ℓ} = isNull (DenseProps ℓ)
@@ -56,15 +51,66 @@ propSheaf→Stable {A = A} propA shfA ¬¬A =
 
 setSheaf→Separated : {A : Type ℓa} → isSet A → Sheaf A → Separated A
 setSheaf→Separated setA shfA a a' =
-  propSheaf→Stable (setA a a') (isNull≡ shfA) -- (lowerSheaf {ℓ' = ℓ} (isNull≡ shfA))
+  propSheaf→Stable (setA a a') (isNull≡ shfA)
 
 StableProp→Sheaf : {A : Type ℓ'} → Stable A → isProp A → Sheaf {ℓ = ℓ} A
 StableProp→Sheaf stableA propA P =
   fromIsEquiv _ (snd (propBiimpl→Equiv propA (isProp→ propA)
     (λ a _ → a) (λ f → stableA (¬¬map f (snd P)))))
 
+Sheaf⊥ : Sheaf {ℓ = ℓ} ⊥
+Sheaf⊥ =
+  StableProp→Sheaf (λ z → z (λ x → x)) isProp⊥
+
+∇¬ : {A : Type ℓa} → ¬ A → ¬ (∇ {ℓ = ℓ} A)
+∇¬ ¬a = nullRec Sheaf⊥ ¬a
+
 ∇→¬¬ : {A : Type ℓa} → ∇ {ℓ = ℓ} A → ¬ ¬ A
-∇→¬¬ = nullRec (StableProp→Sheaf Stable¬ (isPropΠ (λ _ → isProp⊥))) ¬¬in
+∇→¬¬ α ¬a = ∇¬ ¬a α
+
+∇≃¬¬ : {A : Type ℓa} (propA : isProp A) → ∇ {ℓ = ℓ-max ℓ ℓa} A ≃ (¬ ¬ A)
+∇≃¬¬ {ℓa} {ℓ = ℓ} {A = A} propA =
+  propBiimpl→Equiv
+    (NullPreservesProp propA) (isProp¬ _)
+    ∇→¬¬
+    λ ¬¬a → fst (sec (lowerSheaf {ℓ' = ℓ} (isNull-Null (DenseProps (ℓ-max ℓa ℓ))) ((A , propA) , ¬¬a))) ∣_∣
+
+{- A kind of local smallness for ∇ A when A is a set.
+-}
+∇SetCode : {A : Type ℓa} (setA : isSet A) → ∇ {ℓ = ℓ-max ℓa ℓ} A → ∇ {ℓ = ℓ-max ℓa ℓ} A → NullType (DenseProps (ℓ-max ℓa ℓ)) {ℓ = ℓ}
+∇SetCode {ℓa} {ℓ} setA =
+  nullRec
+    (isNullΠ (λ α → isNullNullTypes (DenseProps _) (snd ∘ fst) {ℓ = ℓ-max ℓa ℓ}))
+    (λ a → nullRec (isNullNullTypes (DenseProps _) (snd ∘ fst) {ℓ = ℓ-max ℓa ℓ})
+                   (λ b → NonEmpty (Lift {j = ℓ-max ℓ ℓa} (a ≡ b)) , isNullΠ (λ _ → Sheaf⊥)))
+
+∇SetCode≃ : {A : Type ℓa} (setA : isSet A) → (α β : ∇ {ℓ = ℓ-max ℓa ℓ} A) →
+  (α ≡ β) ≃ fst (∇SetCode {ℓ = ℓ} setA α β)
+∇SetCode≃ {ℓa} {ℓ = ℓ} {A = A} setA =
+  nullElim (λ α → isNullΠ (λ β → isNullEquiv (isNull≡ (isNull-Null (DenseProps _))) (e α β)))
+    (λ a → nullElim (λ β → isNullEquiv (isNull≡ (isNull-Null (DenseProps _))) (e ∣ a ∣ β))
+                    (λ b →
+       ∣ a ∣ ≡ ∣ b ∣ ≃⟨ topUnitWeaklyEmb (DenseProps (ℓ-max ℓa ℓ)) (snd ∘ fst) a b ⟩
+       ∇ (a ≡ b) ≃⟨ ∇≃¬¬ {ℓ = ℓ} (setA a b) ⟩
+       NonEmpty (a ≡ b) ≃⟨ equiv→ (equiv→ LiftEquiv (idEquiv ⊥)) (idEquiv ⊥) ⟩
+       NonEmpty (Lift (a ≡ b))
+         ■))
+    where
+      e : (α β : ∇ A) → isNull (DenseProps (ℓ-max ℓa ℓ)) (fst (∇SetCode {ℓ = ℓ} setA α β))
+      e α β = snd (∇SetCode {ℓ = ℓ} setA α β)
+
+separated∇ : {A : Type ℓa} (setA : isSet A) → Separated (∇ {ℓ = ℓ-max ℓa ℓ} A)
+separated∇ {ℓa = ℓa} {ℓ = ℓ} setA =
+  nullElim
+    (λ α → isNullΠ
+      (λ β → isNullΠ (λ r → isNull≡ (isNull-Null (DenseProps (ℓ-max ℓa ℓ))))))
+    (λ a → nullElim
+      (λ β → isNullΠ (λ r → isNull≡ (isNull-Null (DenseProps (ℓ-max ℓa ℓ)))))
+      (λ b r → ≡hub {α = ((Lift {j = ℓ} (a ≡ b)) , isOfHLevelLift 1 (setA a b)) ,
+                     λ la≢lb →
+                       r (λ p → ∇¬ (λ q → la≢lb (lift q))
+                         (topUnitWeaklyInj (DenseProps (ℓ-max ℓ ℓa)) (snd ∘ fst) a b p))}
+                  λ x → cong ∣_∣ (lower x)))
 
 separatedEmbedsIn∇ : {A : Type ℓa} → Separated A →
   isEmbedding {A = A} {B = ∇ {ℓ = ℓ} A} ∣_∣
@@ -106,6 +152,3 @@ Dec⇓ P = β , (propBiimpl→Equiv (isPropDec propP) (isEmbedding→hasPropFibe
     fiberToDec (true , p) = yes
       (hProp¬¬.StableP P (λ ¬q →
         true≢false (separated→isInj∇unit separatedBool _ _ (p ∙ fib (no ¬q)))))
-
---SheafHProp¬¬ : Sheaf {ℓ = ℓ} (hProp¬¬ ℓ')
---SheafHProp¬¬ = {!separatedSet→Sheaf!}

@@ -4,13 +4,14 @@ open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Equiv.PathSplit
 open import Cubical.Foundations.Equiv.Properties
 open import Cubical.Foundations.Function
+open import Cubical.Foundations.Isomorphism
 open import Cubical.Foundations.Univalence
 open import Cubical.Functions.FunExtEquiv
 open import Cubical.Relation.Nullary
-open import CubicalExtras.Relation.Nullary.Properties
 open import Cubical.Reflection.StrictEquiv
 open import Cubical.Data.Sigma
-open import Cubical.HITs.Nullification.Properties
+open import Cubical.Data.Empty renaming (rec to rec⊥)
+open import Cubical.HITs.Nullification
 open import Cubical.HITs.PropositionalTruncation renaming (rec to truncRec)
 open import Types.DoubleNegationSheaves
 open import Types.PropNegNeg
@@ -19,6 +20,9 @@ open import Notation.Variables
 open import Notation.CoercesToType
 open import Notation.ModalOperatorSugar
 open import Notation.ModalOpInstances.DoubleNegation
+
+open import Util.DoubleNegation
+open import Util.Nullification
 
 module Types.NablaZero where
 
@@ -107,7 +111,7 @@ Sheaf∇₀ {A = A} =
 open isPathSplitEquiv
 
 module Rec {ℓa ℓ : Level} {A : Type ℓa} {B : Type ℓb}
-  (_≈_ : B → B → Type (ℓ-max ℓa ℓ)) (≡Is≃ : (b b' : B) → (b ≡ b') ≃ (b ≈ b'))
+  (_≈_ : B → B → Type (ℓ-max ℓa ℓ)) (≡Is≃ : (b b' : B) → (b ≡ b') ≃ (b ≈ b')) -- local smallness
   (Bset : isSet B) (Bshf : Sheaf {ℓ = ℓ-max ℓ ℓa} B) where
 
   private
@@ -151,6 +155,51 @@ module Rec {ℓa ℓ : Level} {A : Type ℓa} {B : Type ℓb}
         return (cong f q ∙∙ funExt⁻ p a ∙∙ cong g (sym q))
   snd (secCong (∇₀recEquiv) f g) r =
       isSet→ Bset (f ∘ ∇₀unit) (g ∘ ∇₀unit) _ r
+
+∇→∇₀ : {ℓ : Level} {A : Type ℓa} → ∇ {ℓ = ℓ-max ℓa ℓ} A → ∇₀ {ℓ = ℓ-max ℓa ℓ} A
+∇→∇₀ {ℓa = ℓa} {ℓ = ℓ} = rec Sheaf∇₀ (∇₀unit {ℓ = ℓ-max ℓa ℓ})
+
+private
+  retractCriterion : {A : Type ℓa} {B : Type ℓb} (f : A → B)
+    (fdense : (b : B) → NonEmpty (fiber f b))
+    (sepB : Separated B)
+    (g h : B → B) →
+    (H : (a : A) → g (f a) ≡ h (f a)) → (b : B) → g b ≡ h b
+  retractCriterion f fdense sepB g h H b = sepB (g b) (h b)
+    (¬¬map (λ (a , p) → sym (cong g p) ∙∙ H a ∙∙ cong h p) (fdense b))
+  
+  isoCriterion : {ℓc : Level} {A : Type ℓa} {B : Type ℓb} {C : Type ℓc}
+    (sepB : Separated B) (sepC : Separated C)
+    (f : A → B) (fdense : (b : B) → NonEmpty (fiber f b))
+    (g : A → C) (gdense : (c : C) → NonEmpty (fiber g c))
+    (h : B → C) (k : C → B)
+    (commh : (a : A) → h (f a) ≡ g a)
+    (commk : (a : A) → k (g a) ≡ f a)
+      → Iso B C
+  Iso.fun (isoCriterion _ _ _ _ _ _ h _ _ _) = h
+  Iso.inv (isoCriterion _ _ _ _ _ _ _ k _ _) = k
+  Iso.leftInv (isoCriterion sepB _ f fdense _ _ h k commh commk) =
+    retractCriterion f fdense sepB (k ∘ h) (idfun _)
+      λ a → cong k (commh a) ∙ commk a
+  Iso.rightInv (isoCriterion _ sepC _ _ g gdense h k commh commk) =
+    retractCriterion g gdense sepC (h ∘ k) (idfun _)
+      λ a → cong h (commk a) ∙ commh a
+
+module _ {ℓa : Level} {ℓ : Level} {A : Type ℓa} (setA : isSet A) where
+  open Rec {ℓ-max (ℓ-suc ℓa) (ℓ-suc ℓ)} {ℓa} {ℓ} {A} (λ α β → fst (∇SetCode {ℓ = ℓ} setA α β)) (∇SetCode≃ {ℓ = ℓ} setA) (topPreservesHLevel (DenseProps (ℓ-max ℓa ℓ)) (λ P → snd (fst P)) 2 setA) (isNull-Null (DenseProps (ℓ-max ℓa ℓ)))
+  ∇₀→∇ : ∇₀ {ℓ = ℓ-max ℓa ℓ} A → ∇ {ℓ = ℓ-max ℓa ℓ} A
+  ∇₀→∇ = ∇₀rec ∣_∣
+
+  ∇≃∇₀ : ∇₀ {ℓ = ℓ-max ℓa ℓ} A ≃ ∇ {ℓ = ℓ-max ℓa ℓ} A
+  ∇≃∇₀ = isoToEquiv
+    (isoCriterion
+      separated∇₀ (separated∇ {ℓ = ℓ} setA) (∇₀unit {ℓ = ℓ-max ℓa ℓ})
+      (λ α → do
+        (a , p) ← almostInh α
+        ¬¬in (a , (∇₀∩≡ (∇₀unit a) α a (¬¬in (lift refl)) p)))
+      ∣_∣ (λ α → ∇→¬¬ (nullFiber α)) ∇₀→∇ (∇→∇₀ {ℓ = ℓ-max ℓa ℓ})
+      (∇₀recβ ∣_∣)
+      λ a → refl)
 
 sheafHProp¬¬ : Sheaf (hProp¬¬ ℓ)
 sheafHProp¬¬ {ℓ = ℓ} =
