@@ -3,12 +3,13 @@ open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Function
 open import Cubical.Relation.Nullary
-open import CubicalExtras.Relation.Nullary.Properties
 open import Cubical.Data.Sigma
 open import Cubical.Data.Nat hiding (elim)
 
 open import Types.PropNegNeg
 open import Types.NablaZero
+
+open import Util.DoubleNegation
 
 open import Notation.CoercesToType
 

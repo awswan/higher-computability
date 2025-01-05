@@ -2,7 +2,6 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Equiv
 open import Cubical.Relation.Nullary.Base
-open import CubicalExtras.Relation.Nullary.Properties
 open import Dominance.Base
 open import Dominance.DoubleNegation
 
@@ -21,6 +20,8 @@ open import Notation.CoercesToType
 open import Notation.Variables
 
 open import Types.NatInf
+
+open import Util.DoubleNegation
 
 module Dominance.NatInf where
 
@@ -48,7 +49,7 @@ containsUnit ℕ∞Pred = ℕ→ℕ∞ 0 , invEquiv (isContr→≃Unit*
 ∂ℕ∞→∂¬¬ : ⦃ _ : MarkovInduction ℓ-zero ⦄ {A : Type ℓa} → ∂ℕ∞ A → ∂¬¬ ℓ A
 ∂._↓ (∂ℕ∞→∂¬¬ α) = Lift (α ↓)
 ∂.domainInD (∂ℕ∞→∂¬¬ {ℓ = ℓ} ⦃ mi ⦄ α) = isOfHLevelLift 1 (isPropDomain α) ,
-  λ x → lift (equivPresStable (invEquiv (snd (domainInD α)))
+  λ x → lift (equivPreservesStable (invEquiv (snd (domainInD α)))
                               (Stable⟨ℕ∞⟩ (fst (domainInD α)))
                               (¬¬map lower x))
 ∂.value (∂ℕ∞→∂¬¬ α) x = value α (lower x)

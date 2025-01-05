@@ -10,8 +10,6 @@ open import Cubical.Data.Sigma
 open import Cubical.HITs.PropositionalTruncation
 
 open import Cubical.Relation.Nullary
-open import CubicalExtras.Relation.Nullary.Properties
-
 
 open import Dominance.Base
 open import Dominance.NatInf
@@ -23,6 +21,7 @@ open import Notation.Variables
 open import Notation.CoercesToType
 
 --open import Misc
+open import Util.DoubleNegation
 
 module Axioms.ComputableChoice where
 

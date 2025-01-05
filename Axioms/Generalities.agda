@@ -3,7 +3,6 @@ open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Function
 open import Cubical.Foundations.HLevels
 open import Cubical.Relation.Nullary
-open import CubicalExtras.Relation.Nullary.Properties
 open import Cubical.HITs.PropositionalTruncation
 open import Cubical.Data.Empty.Properties
 open import Cubical.Data.Nat.Base
@@ -24,6 +23,8 @@ open import Notation.Variables
 open import Notation.ModalOperatorSugar
 open import Notation.ModalOpInstances.PropositionalTruncation
 open import Notation.CoercesToType
+
+open import Util.DoubleNegation
 
 module Axioms.Generalities
   {A : Type ℓa}
@@ -76,7 +77,7 @@ module WithMP ⦃ _ : MarkovInduction ℓ-zero ⦄ where
       hProp¬¬.StableP (R a e') =
         StableΠ (λ b → StableΠ
           (λ x → StableΣ
-            (equivPresStable (invEquiv (snd (domainInD (s e' b))))
+            (equivPreservesStable (invEquiv (snd (domainInD (s e' b))))
               (Stable⟨ℕ∞⟩ (fst (domainInD (s e' b))))) (isPropDomain (s e' b)) λ _ → sepA _ _))
   
       Rtotal : (a : A) → ∥ Σ[ e' ∈ A ] ⟨ R a e' ⟩ ∥₁

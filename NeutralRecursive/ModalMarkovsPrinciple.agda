@@ -5,7 +5,6 @@ open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Function
 open import Cubical.Relation.Nullary
 open import Cubical.Induction.WellFounded
-open import CubicalExtras.Relation.Nullary.Properties
 open import Cubical.HITs.Nullification renaming (rec to nullRec)
 open import Cubical.HITs.PropositionalTruncation
 open import Cubical.Data.Bool.Base
@@ -31,6 +30,8 @@ open import Notation.CoercesToType
 open import Notation.ModalOperatorSugar
 open import Notation.ModalOpInstances.DoubleNegation
 open import Notation.Variables
+
+open import Util.DoubleNegation
 
 module NeutralRecursive.ModalMarkovsPrinciple
   {ℓbase : Level}

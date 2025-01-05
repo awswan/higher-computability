@@ -7,7 +7,7 @@ open import StrictlyCounted.Base
 open import Cubical.Data.Nat.Base
 open import Cubical.Data.List.Base
 open import Cubical.Data.List.Properties
-open import CubicalExtras.Data.List.FinData
+open import Cubical.Data.List.FinData
 open import Cubical.Data.FinData
 open import Cubical.Data.Sum
 open import Cubical.Data.Unit.Properties
