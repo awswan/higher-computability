@@ -2,7 +2,6 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
 open import Cubical.Functions.Surjection
 open import Cubical.Relation.Nullary
-open import CubicalExtras.Relation.Nullary.Properties
 open import Cubical.HITs.PropositionalTruncation
 
 open import Types.PropNegNeg
@@ -14,6 +13,8 @@ open import Notation.ModalOperatorSugar
 open import Notation.ModalOpInstances.PropositionalTruncation
 open import Notation.CoercesToType
 open import Notation.Variables
+
+open import Util.DoubleNegation
 
 module FixedPoint
   where
