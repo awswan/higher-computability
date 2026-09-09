@@ -1,6 +1,5 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
-open import Cubical.Functions.Surjection
 open import Cubical.Relation.Nullary
 open import Cubical.HITs.PropositionalTruncation
 
@@ -35,13 +34,6 @@ module Fixed {A : Type ℓ}
   ifMaximal : ((b b' : B) → F b ⊑ b' → F b ≡ b') → ∥ Σ[ b ∈ B ] F b ≡ b ∥₁
   ifMaximal maxF = map (λ (a₀ , p) → (s a₀ a₀) , (maxF _ _ (p a₀))) (sDense t)
 
--- _⊑_ : {A : Type ℓa} {B : Type ℓb}
---   {Dom : PreDominance ℓ ℓ'} → (A → ∂ Dom B) →
---   (A → ∂ Dom B) → Type (ℓ-max (ℓ-max ℓa ℓb) ℓ)
--- _⊑_ {A = A} {B = B} f g = (a : A) → f a ↓= b ⇒ (g a ↓= c & (c ≡ b))
-
-
-
 mvFixed : {A : Type ℓa}
   (sepA : Separated A)
   (s : A → (A → ∂¬¬ ℓ A))
@@ -52,7 +44,8 @@ mvFixed : {A : Type ℓa}
   (F : A → A → ∂¬¬ ℓ A) →
   ∥ Σ[ e ∈ A ] F e ⊑ s e ∥₁
 
-mvFixed {ℓa = ℓa} {ℓ = ℓ} {A = A} sepA s sMultiDense F = {!!}
+mvFixed {ℓa = ℓa} {ℓ = ℓ} {A = A} sepA s sMultiDense F =
+  map (λ (e₀ , e₀Works) → fixedPt e₀ e₀Works) (sMultiDense R (λ a _ → totalR a))
   where
     R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
     hProp¬¬.P (R a b) = (c : A) → s a a ↓= d ⇒ (F d c ↓= e ⇒ (s b c ↓= f & (f ≡ e)))
@@ -65,7 +58,7 @@ mvFixed {ℓa = ℓa} {ℓ = ℓ} {A = A} sepA s sMultiDense F = {!!}
     totalR : (a : A) → ∥ Σ[ b ∈ A ] ⟨ R a b ⟩ ∥₁
     totalR a = do
       (b , bWorks) ← sMultiDense R' R'total
-      return (b , (λ c y z → {!!} , {!!}))
+      return (b , solves b bWorks)
       where
         R' : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
         hProp¬¬.P (R' c f) = s a a ↓= d & (F d c ↓= e & (f ≡ e))
@@ -86,35 +79,29 @@ mvFixed {ℓa = ℓa} {ℓ = ℓ} {A = A} sepA s sMultiDense F = {!!}
 
             d = value (s a a) (fst bothDefd)
 
-    -- open PreDominance (¬¬PreDom ℓ)
-    -- diag : A → A → ∂¬¬ ℓ A
-    -- diag e n = s e e >>= λ d → F d n  
+        -- The value of the diagonal `F (s a a) c`, given proofs that both
+        -- `s a a` and the subsequent application of `F` are defined.
+        valAt : (c : A) → (Σ[ u ∈ s a a ↓ ] (F (value (s a a) u) c ↓)) → A
+        valAt c (u , v) = value (F (value (s a a) u) c) v
 
-    -- R : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
-    -- hProp¬¬.P (R e n) = diag e ⊑ s n
-    -- hProp¬¬.StableP (R e n) =
-    --   StableΠ λ a →
-    --     StableΠ (λ _ →
-    --       StableΣ (∂domainStable (s n a)) (isPropDomain (s n a)) λ _ → sepA _ _)
-    -- hProp¬¬.isPropP (R e n) =
-    --   isPropΠ (λ a →
-    --     isPropΠ (λ _ →
-    --       isPropΣ (isPropDomain (s n a)) λ _ → Separated→isSet sepA _ _))
+        isPropBoth : (c : A) → isProp (Σ[ u ∈ s a a ↓ ] (F (value (s a a) u) c ↓))
+        isPropBoth c =
+          isPropΣ (isPropDomain (s a a)) λ u → isPropDomain (F (value (s a a) u) c)
 
-    -- total : (e : A) →
-    --   ∥ Σ[ diagCode ∈ A ] ((e : A) → s diagCode e ↓= a & (diag e ⊑ s a))  ∥₁
-    -- total e = do
-    --   return {!!}
-    --   where
-    --     S : A → A → hProp¬¬ (ℓ-max ℓa ℓ)
-    --     hProp¬¬.P (S n a) = diag e n ↓= d ⇒ (a ≡ d)
-    --     hProp¬¬.isPropP (S n a) = isPropΠ (λ S → Separated→isSet sepA _ _)
-    --     hProp¬¬.StableP (S n a) = StableΠ (λ _ → sepA _ _)
+        solves : (b : A) →
+          ((c : A) → NonEmpty (Σ[ f ∈ A ] ⟨ R' c f ⟩) → s b c ↓= f & ⟨ R' c f ⟩) →
+          ⟨ R a b ⟩
+        solves b bWorks c y z =
+          (fst sol) ,
+          (snd (snd (snd sol)) ∙
+            cong (valAt c) (isPropBoth c (fst (snd sol) , fst (snd (snd sol))) (y , z)))
+          where
+            sol = bWorks c (¬¬in (valAt c (y , z) , (y , (z , refl))))
 
-    --     totalS : (e : A) → ∥ Σ[ b ∈ A ] ⟨ S e b ⟩ ∥₁
-    --     totalS e = do
-    --       (a , p) ← sMultiDense S {!!}
-    --       {!!}
-    --       where
-    --         isDiage : A → A → hProp¬¬ {!!}
-    --         hProp¬¬.P (isDiage a b) = diag e a ↓= c & (b ≡ c)
+    fixedPt : (e₀ : A) →
+      ((a : A) → NonEmpty (Σ[ b ∈ A ] ⟨ R a b ⟩) → s e₀ a ↓= b & ⟨ R a b ⟩) →
+      Σ[ e ∈ A ] F e ⊑ s e
+    fixedPt e₀ e₀Works = value (s e₀ e₀) (fst sol) , λ c → snd sol c (fst sol)
+      where
+        sol : s e₀ e₀ ↓= b & ⟨ R e₀ b ⟩
+        sol = e₀Works e₀ (∥∥₁→NonEmpty (totalR e₀))
