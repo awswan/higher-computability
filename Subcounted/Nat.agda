@@ -1,5 +1,3 @@
-open import Cubical.Core.Everything
-
 open import Cubical.Data.Nat
 
 open import Cubical.HITs.PropositionalTruncation

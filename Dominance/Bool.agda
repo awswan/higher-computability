@@ -2,16 +2,18 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Function
-open import Cubical.Relation.Nullary.Base
+open import Cubical.Relation.Nullary
 
 open import Cubical.Data.Bool
-open import CubicalExtras.Data.Bool.Properties
 open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
 
 open import Dominance.Base
+open import Dominance.DoubleNegation
 
 open import Notation.Variables
+
+open import Util.DoubleNegation
 
 module Dominance.Bool where
 
@@ -42,3 +44,15 @@ isDefinedAndDec {ℓ = ℓ} {P = P} dec α = helper (domainInD α)
       where
         α↓ : α ↓
         α↓ = equivFun e tt
+
+-- Every proposition in the Bool dominance is decidable, hence stable, so the
+-- Bool dominance is contained in the double negation dominance.
+∂BoolDomainStable : {A : Type ℓa} (α : ∂Bool {ℓ' = ℓ} A) → Stable (α ↓)
+∂BoolDomainStable α =
+  equivPreservesStable (snd (domainInD α)) (Dec→Stable DecBool→Type)
+
+∂Bool→∂¬¬ : {A : Type ℓa} → ∂Bool {ℓ' = ℓ} A → ∂¬¬ (ℓ-max ℓ ℓ') A
+_↓ (∂Bool→∂¬¬ {ℓ' = ℓ'} α) = Lift {j = ℓ'} (α ↓)
+domainInD (∂Bool→∂¬¬ α) = isOfHLevelLift 1 (isPropDomain α) ,
+  (λ ¬¬d → lift (∂BoolDomainStable α (¬¬map lower ¬¬d)))
+value (∂Bool→∂¬¬ α) d = value α (lower d)

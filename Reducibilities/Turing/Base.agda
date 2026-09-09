@@ -5,7 +5,6 @@ open import Cubical.Foundations.Equiv
 open import Cubical.Relation.Nullary
 open import Cubical.Data.Sigma.Base
 open import Cubical.Data.Bool.Base
-open import CubicalExtras.HITs.Nullification.Properties
 open import Cubical.HITs.Nullification.Base
 open import Cubical.HITs.Nullification.Properties
 
@@ -30,10 +29,6 @@ P ≡T Q = (P ≤T Q) × (Q ≤T P)
 [_] : {A : Type ℓa} {B : Type ℓb} (χ : A → ∇ {ℓ = ℓ} B) → A →
   Type (ℓ-max ℓb (ℓ-suc ℓ))
 [ χ ] a = χ a ⇓
-
-private variable
-  A : Type ℓa
-  B : Type ℓb
 
 ≤m→≤T : (P : A → Type ℓ) (Q : B → Type ℓ') → (P ≤m Q) → (P ≤T Q)
 ≤m→≤T P Q r a =

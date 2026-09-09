@@ -2,8 +2,9 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Equiv
 open import Cubical.Relation.Nullary
-open import CubicalExtras.Relation.Nullary.Properties
+open import Util.DoubleNegation
 open import Axioms.ComputableChoice
+open import Axioms.MarkovInduction
 
 open import Cubical.Data.Nat.Base
 open import Cubical.Data.Sigma
@@ -27,14 +28,15 @@ open import Notation.CoercesToType
 open import Notation.Variables
 
 module FirstKleene.SubcountableChoice
-  ( mp : (α : ℕ∞) → Stable ⟨ α ⟩ )
+  ⦃ _ : MarkovInduction ℓ-zero ⦄
+  ⦃ _ : ComputableChoice ⦄
   where
 
 φ⟨_⇒_⟩ : 
   (A : Type ℓa) (B : Type ℓb) ⦃ _ : StrictlyCounted A ⦄ →
   ⦃ _ : Subcounted ℓ B ⦄
   (n : ℕ) → A → ∂¬¬ ℓ B
-φ⟨ A ⇒ B ⟩ e a = ∂ℕ∞→∂¬¬ mp (φ e (invEq sCtdEquiv a)) >>= subEnum
+φ⟨ A ⇒ B ⟩ e a = ∂ℕ∞→∂¬¬ (φ e (invEq sCtdEquiv a)) >>= subEnum
 
 subCountedChoice :   {ℓA : Level} {A : Type ℓA} ⦃ sctdA : StrictlyCounted A ⦄
   {ℓB ℓscb : Level} {B : Type ℓB} ⦃ subctdB : Subcounted ℓB B ⦄ →
@@ -44,7 +46,7 @@ subCountedChoice :   {ℓA : Level} {A : Type ℓA} ⦃ sctdA : StrictlyCounted 
                    φ⟨ A ⇒ B ⟩ e a ↓= b & ⟨ R a b ⟩) ∥₁
 
 subCountedChoice {ℓ = ℓ} {A = A} {ℓB = ℓB} {B = B} R Rtotal = do
-  (e , eWorks) ← ComputableChoice R' Rtotal'
+  (e , eWorks) ← computableChoice R' Rtotal'
   return (e , λ a ¬¬b →
     reformatR'→R e a (eWorks (invEq sCtdEquiv a)
       (¬¬b >>= λ (b , r) →
