@@ -11,3 +11,6 @@ record StrictlyCounted (X : Type ℓ) : Type ℓ where
     sCtdEquiv : ℕ ≃ X
 
 open StrictlyCounted ⦃...⦄ public
+
+sEnum : {X : Type ℓ} ⦃ _ : StrictlyCounted X ⦄ → ℕ → X
+sEnum = equivFun sCtdEquiv

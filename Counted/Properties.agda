@@ -17,10 +17,11 @@ open import Notation.Variables
 
 module Counted.Properties where
 
-strictlyCounted→Counted : (X : Type ℓ)
-  ⦃ sctdX : StrictlyCounted X ⦄ → Counted X
-Counted.enum (strictlyCounted→Counted X ⦃ sctdX ⦄) n =
-  return (equivFun (StrictlyCounted.sCtdEquiv sctdX) n)
-Counted.isSurjEnum (strictlyCounted→Counted X ⦃ sctdX ⦄) x =
-  map (λ (n , p) → n , (tt* , p))
-      (isEquiv→isSurjection (snd (StrictlyCounted.sCtdEquiv sctdX)) x)
+instance
+  strictlyCounted→Counted : {X : Type ℓ}
+    ⦃ sctdX : StrictlyCounted X ⦄ → Counted X
+  Counted.enum (strictlyCounted→Counted ⦃ sctdX ⦄) n =
+    return (equivFun (StrictlyCounted.sCtdEquiv sctdX) n)
+  Counted.isSurjEnum (strictlyCounted→Counted ⦃ sctdX ⦄) x =
+    map (λ (n , p) → n , (tt* , p))
+        (isEquiv→isSurjection (snd (StrictlyCounted.sCtdEquiv sctdX)) x)
