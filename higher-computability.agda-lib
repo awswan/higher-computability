@@ -1,3 +1,4 @@
+name: higher-computability
 include: .
 depend: cubical-0.9
 flags: --cubical --guardedness --safe
