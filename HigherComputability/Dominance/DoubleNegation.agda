@@ -40,3 +40,7 @@ isDefinedAndStable : {A : Type ℓ} (α : ∂¬¬ ℓ' A) {Z : A → Type ℓ''}
   (zstable : (a : A) → Stable (Z a)) → Stable (α ↓= a & Z a)
 isDefinedAndStable α zstable = StableΣ (∂¬¬domainStable α)
   (isPropDomain α) λ d → zstable (value α d)
+
+undefined¬¬ : (A : Type ℓ) → ∂¬¬ ℓ' A
+(undefined¬¬ A) ↓ = ⊥*
+domainInD (undefined¬¬ A) = isProp⊥* , (λ x → rec (x λ y → rec* y))

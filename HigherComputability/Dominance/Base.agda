@@ -36,6 +36,11 @@ record ∂ (D : PreDominance ℓ ℓ') (A : Type ℓ'') :
 open ∂ public
 
 module _ {ℓa : Level} {D : PreDominance ℓ ℓ'} {A : Type ℓa} where
+  ι : A → ∂ D A
+  ι a ↓ = Unit*
+  domainInD (ι a) = containsUnit D
+  value (ι a) _ = a
+  
   isPropDomain : (α : ∂ D A) → isProp (α ↓)
   isPropDomain α = onlyProps D (α ↓) (domainInD α)
   
