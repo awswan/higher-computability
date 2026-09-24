@@ -13,7 +13,9 @@ open import Cubical.Data.Unit
 open import Cubical.Data.Empty as ⊥ using (⊥* ; uninhabEquiv)
 open import Cubical.Data.Fin
 open import Cubical.Data.Bool
-open import Cubical.Data.Sum using (_⊎_; inl; inr)
+open import Cubical.Data.Sum as ⊎ using (_⊎_; inl; inr)
+
+open import Cubical.HITs.PropositionalTruncation as PT using (∥_∥₁; ∣_∣₁; isPropPropTrunc)
 
 open import HigherComputability.Axioms.MarkovInduction
 open import HigherComputability.NeutralRecursive.MarkovsPrinciple
@@ -95,45 +97,47 @@ module _ (P : ℕ → Type) (isPropP : (m : ℕ) → isProp (P m))
   inDomLeast = ℕ∞Least , leastEquiv
 
 
+-- The union of two ℕ∞ propositions: search for the first stage at which
+-- either converges. Picking a side records which one got there first (with
+-- ties going to the left).
 private
-  pick : (x y : Bool) → Bool→Type (x or y) → Bool→Type x ⊎ Bool→Type y
-  pick true _ p = inl p
-  pick false _ p = inr p
-
-  orL : (x y : Bool) → Bool→Type x → Bool→Type (x or y)
-  orL true _ p = p
-
-  orR : (x y : Bool) → Bool→Type y → Bool→Type (x or y)
-  orR true _ _ = tt
-  orR false _ p = p
-
--- Run two partial elements in parallel, stopping at the first stage at which
--- either converges. The value records which one got there first (with ties
--- going to the left).
-module _ {A : Type ℓa} {B : Type ℓb} (α : ∂ℕ∞ A) (β : ∂ℕ∞ B) where
-  private
+  module Union {A B : Type} (inA : PreDominance.inDom ℕ∞Pred A)
+               (inB : PreDominance.inDom ℕ∞Pred B) where
     a b : ℕ∞
-    a = fst (domainInD α)
-    b = fst (domainInD β)
+    a = fst inA
+    b = fst inB
 
     hit : ℕ → Type
     hit k = Bool→Type (ℕ∞.f a k or ℕ∞.f b k)
 
-  race : ∂ℕ∞ ((α ↓) ⊎ (β ↓))
-  race ↓ = Σ[ k ∈ ℕ ] leastSuch hit k
-  domainInD race = inDomLeast hit (λ _ → isPropBool→Type) (λ _ → DecBool→Type)
-  value race (k , h , _) with pick (ℕ∞.f a k) (ℕ∞.f b k) h
-  ... | inl p = inl (invEq (snd (domainInD α)) (k , p))
-  ... | inr q = inr (invEq (snd (domainInD β)) (k , q))
+    L : Type
+    L = Σ[ k ∈ ℕ ] leastSuch hit k
 
-  raceDefL : α ↓ → race ↓
-  raceDefL z = leastExists (λ _ → DecBool→Type) k (orL _ _ p)
-    where
-      k = fst (equivFun (snd (domainInD α)) z)
-      p = snd (equivFun (snd (domainInD α)) z)
+    inL : PreDominance.inDom ℕ∞Pred L
+    inL = inDomLeast hit (λ _ → isPropBool→Type) (λ _ → DecBool→Type)
 
-  raceDefR : β ↓ → race ↓
-  raceDefR z = leastExists (λ _ → DecBool→Type) k (orR (ℕ∞.f a k) _ q)
-    where
-      k = fst (equivFun (snd (domainInD β)) z)
-      q = snd (equivFun (snd (domainInD β)) z)
+    toL : A ⊎ B → L
+    toL (inl x) = let (k , p) = equivFun (snd inA) x in
+      leastExists (λ _ → DecBool→Type) k (Bool→Type⊎' _ _ (inl p))
+    toL (inr y) = let (k , q) = equivFun (snd inB) y in
+      leastExists (λ _ → DecBool→Type) k (Bool→Type⊎' (ℕ∞.f a k) _ (inr q))
+
+    fromL : L → A ⊎ B
+    fromL (k , h , _) =
+      ⊎.map (λ p → invEq (snd inA) (k , p)) (λ q → invEq (snd inB) (k , q))
+            (Bool→Type⊎ (ℕ∞.f a k) (ℕ∞.f b k) h)
+
+    fromUnion : ∥ A ⊎ B ∥₁ → L
+    fromUnion = PT.rec (onlyProps ℕ∞Pred L inL) toL
+
+instance
+  ℕ∞PredSupportsUnionAndPick : SupportsUnionAndPick ℕ∞Pred
+  SupportsUnionAndPick.unionInDom ℕ∞PredSupportsUnionAndPick inA inB =
+    fst inL ,
+    propBiimpl→Equiv isPropPropTrunc (onlyProps ℕ∞Pred L inL) fromUnion
+      (λ l → ∣ fromL l ∣₁)
+    ∙ₑ snd inL
+    where open Union inA inB
+  SupportsUnionAndPick.pick ℕ∞PredSupportsUnionAndPick inA inB w =
+    fromL (fromUnion w)
+    where open Union inA inB

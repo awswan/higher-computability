@@ -7,6 +7,9 @@ open import Cubical.Relation.Nullary
 open import Cubical.Data.Bool
 open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
+open import Cubical.Data.Sum as ⊎ using (_⊎_)
+
+open import Cubical.HITs.PropositionalTruncation as PT using (∥_∥₁; ∣_∣₁; isPropPropTrunc)
 
 open import HigherComputability.Dominance.Base
 open import HigherComputability.Dominance.Extensions
@@ -29,9 +32,25 @@ containsUnit BoolPred = true , Unit≃Unit*
   ΣBool b (λ x → fst (Qdata (equivFun e x))) ,
   ΣBool≃Σ ∙ₑ Σ-cong-equiv e λ x → snd (Qdata (equivFun e x))
 
+private
+  unionBool→Type : {a b : Bool} {A B : Type ℓ} →
+    Bool→Type a ≃ A → Bool→Type b ≃ B → ∥ A ⊎ B ∥₁ → Bool→Type (a or b)
+  unionBool→Type {a = a} {b = b} ea eb =
+    PT.rec isPropBool→Type
+      (λ s → Bool→Type⊎' a b (⊎.map (invEq ea) (invEq eb) s))
+
 instance
   BoolPredContainsEmpty : ContainsEmpty (BoolPred {ℓ = ℓ})
   ContainsEmpty.containsEmpty BoolPredContainsEmpty = false , LiftEquiv
+
+  BoolPredSupportsUnionAndPick : SupportsUnionAndPick (BoolPred {ℓ = ℓ})
+  SupportsUnionAndPick.unionInDom BoolPredSupportsUnionAndPick (a , ea) (b , eb) =
+    (a or b) ,
+    propBiimpl→Equiv isPropBool→Type isPropPropTrunc
+      (λ t → ∣ ⊎.map (equivFun ea) (equivFun eb) (Bool→Type⊎ a b t) ∣₁)
+      (unionBool→Type ea eb)
+  SupportsUnionAndPick.pick BoolPredSupportsUnionAndPick (a , ea) (b , eb) w =
+    ⊎.map (equivFun ea) (equivFun eb) (Bool→Type⊎ a b (unionBool→Type ea eb w))
 
 ∂Bool : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ'))
 ∂Bool {ℓ' = ℓ'} = ∂ (BoolPred {ℓ = ℓ'})
