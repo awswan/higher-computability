@@ -3,12 +3,14 @@ open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Equiv
 open import Cubical.Relation.Nullary.Base
 open import HigherComputability.Dominance.Base
+open import HigherComputability.Dominance.Extensions
 open import HigherComputability.Dominance.DoubleNegation
 
 open import Cubical.Data.Nat
 open import Cubical.Data.Maybe
 open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
+open import Cubical.Data.Empty as ⊥ using (⊥* ; uninhabEquiv)
 open import Cubical.Data.Fin
 open import Cubical.Data.Bool
 open import Cubical.Data.Sum using (_⊎_; inl; inr)
@@ -45,6 +47,16 @@ containsUnit ℕ∞Pred = ℕ→ℕ∞ 0 , invEquiv (isContr→≃Unit*
   Σ[ x ∈ ⟨ α ⟩ ] ⟨ fst (d (invEq e x)) ⟩
     ≃⟨ invEquiv (ℕ∞Σ≃ α (λ x → fst (d (invEq e x)))) ⟩
   ⟨ ℕ∞Σ α (λ x → fst (d (invEq e x))) ⟩ ■)
+
+-- the element of ℕ∞ that never hits
+ℕ∞Never : ℕ∞
+ℕ∞.f ℕ∞Never _ = false
+ℕ∞.unique ℕ∞Never (_ , ())
+
+instance
+  ℕ∞PredContainsEmpty : ContainsEmpty ℕ∞Pred
+  ContainsEmpty.containsEmpty ℕ∞PredContainsEmpty =
+    ℕ∞Never , uninhabEquiv ⊥.rec* λ ()
 
 ∂ℕ∞ : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ-zero))
 ∂ℕ∞ = ∂ ℕ∞Pred

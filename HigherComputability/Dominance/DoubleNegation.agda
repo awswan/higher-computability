@@ -12,6 +12,7 @@ open import Cubical.Data.Unit
 open import HigherComputability.Types.PropNegNeg
 
 open import HigherComputability.Dominance.Base
+open import HigherComputability.Dominance.Extensions
 
 open import HigherComputability.Notation.Variables
 open import HigherComputability.Notation.ModalOperatorSugar
@@ -30,6 +31,11 @@ containsUnit (¬¬PreDom ℓ) = isPropUnit* , (λ _ → tt*)
   (isPropΣ isPropP λ p → fst (stablePropQ p)) ,
   StableΣ StableP isPropP λ p → snd (stablePropQ p)
 
+instance
+  ¬¬PreDomContainsEmpty : ContainsEmpty (¬¬PreDom ℓ)
+  ContainsEmpty.containsEmpty ¬¬PreDomContainsEmpty =
+    isProp⊥* , (λ x → rec (x λ y → rec* y))
+
 ∂¬¬ : (ℓ' : Level) → Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ'))
 ∂¬¬ ℓ' = ∂ (¬¬PreDom ℓ')
 
@@ -40,7 +46,3 @@ isDefinedAndStable : {A : Type ℓ} (α : ∂¬¬ ℓ' A) {Z : A → Type ℓ''}
   (zstable : (a : A) → Stable (Z a)) → Stable (α ↓= a & Z a)
 isDefinedAndStable α zstable = StableΣ (∂¬¬domainStable α)
   (isPropDomain α) λ d → zstable (value α d)
-
-undefined¬¬ : (A : Type ℓ) → ∂¬¬ ℓ' A
-(undefined¬¬ A) ↓ = ⊥*
-domainInD (undefined¬¬ A) = isProp⊥* , (λ x → rec (x λ y → rec* y))

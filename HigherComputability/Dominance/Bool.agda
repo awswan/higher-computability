@@ -9,6 +9,7 @@ open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
 
 open import HigherComputability.Dominance.Base
+open import HigherComputability.Dominance.Extensions
 open import HigherComputability.Dominance.DoubleNegation
 
 open import HigherComputability.Notation.Variables
@@ -27,6 +28,10 @@ containsUnit BoolPred = true , Unit≃Unit*
 Σclosed BoolPred (b , e) Qdata =
   ΣBool b (λ x → fst (Qdata (equivFun e x))) ,
   ΣBool≃Σ ∙ₑ Σ-cong-equiv e λ x → snd (Qdata (equivFun e x))
+
+instance
+  BoolPredContainsEmpty : ContainsEmpty (BoolPred {ℓ = ℓ})
+  ContainsEmpty.containsEmpty BoolPredContainsEmpty = false , LiftEquiv
 
 ∂Bool : Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ'))
 ∂Bool {ℓ' = ℓ'} = ∂ (BoolPred {ℓ = ℓ'})
